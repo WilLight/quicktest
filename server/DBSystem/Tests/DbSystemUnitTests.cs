@@ -53,5 +53,13 @@ namespace server.DBSystem.Tests
             
             Assert.Equal(expectedResults, results);
         }
+
+        [Fact]
+        public void GetLastUserIdFromTable()
+        {
+            const uint expectedId = 1;
+            
+            Assert.Equal(expectedId, _dbManagerContainer.DbManager.GetLastUserId());
+        }
     }
 }
