@@ -68,10 +68,11 @@ namespace server.DBSystem
         /// <summary>
         /// Try to register new user with provided credentials.
         /// </summary>
+        /// <param name="role">Role of the new user.</param>
         /// <param name="userCredentials">Provided user credentials (login & password).</param>
         /// <param name="userData">Data of the new user (can be null when validation was failed).</param>
         /// <returns>Returns true when a new user was successfully registered and false when registration was failed because of data validation.</returns>
-        public bool TryRegisterUser(UserCredentials userCredentials, out UserData userData)
+        public bool TryRegisterUser(UserRole role, UserCredentials userCredentials, out UserData userData)
         {
             if (TryLogInUser(userCredentials, out _))
             {
@@ -80,7 +81,7 @@ namespace server.DBSystem
                 return false;
             }
             
-            userData = new UserData(++_lastUserId, userCredentials);
+            userData = new UserData(++_lastUserId, userCredentials, role);
             
             _usersCollection.InsertOne(userData);
 
