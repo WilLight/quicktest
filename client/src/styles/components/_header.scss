@@ -1,0 +1,41 @@
+.header {
+   padding: 0 2.5%;
+   height: 70px;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   background-color: $blue;
+
+   &__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      span {
+         font-weight: 700;
+         font-size: 32px;
+      }
+
+      svg {
+         font-size: 40px;
+      }
+   }
+
+   &__nav {
+      button {
+         padding: 3px 15px;
+         margin: 0 10px;
+         font-weight: 500;
+         border-radius: 30px;
+         color: $dark;
+         border: 2px solid $dark;
+         background-color: #fff;
+
+         &:hover {
+            background-color: $dark;
+            color: #fff;
+            border: 2px solid #fff;
+         }
+      }
+   }
+}
