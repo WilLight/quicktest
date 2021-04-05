@@ -14,6 +14,7 @@ namespace server.DBSystem
         private const string MongoConnectStringPrefix = "mongodb://";
         private const string QuickTestDbName = "quicktest";
         private const string UsersCollectionName = "users";
+        private const string ClassroomsCollectionName = "classrooms";
         
         private IMongoDatabase _database;
         private IMongoCollection<UserData> _usersCollection;
