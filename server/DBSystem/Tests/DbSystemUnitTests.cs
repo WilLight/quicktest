@@ -4,6 +4,7 @@ using Xunit;
 
 namespace server.DBSystem.Tests
 {
+#if DEBUG
     /// <summary>
     /// Class, that manages unit tests, which are related to the DB.
     /// </summary>
@@ -87,8 +88,9 @@ namespace server.DBSystem.Tests
 
             foreach (var userCredential in testUserCredentials)
             {
-                var registerResult = _dbManagerContainer.DbManager.TryRegisterUser(userCredential, out var userData);
-                
+                var registerResult =
+                    _dbManagerContainer.DbManager.TryRegisterUser(UserRole.Student, userCredential, out var userData);
+
                 results.Add(registerResult);
 
                 if (userData != null)
@@ -105,4 +107,5 @@ namespace server.DBSystem.Tests
             Assert.Equal(expectedResults, results);
         }
     }
+#endif
 }
