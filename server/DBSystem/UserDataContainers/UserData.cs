@@ -1,4 +1,4 @@
-﻿namespace server.DBSystem
+﻿namespace server.DBSystem.UserDataContainers
 {
     /// <summary>
     /// Class, that contains user's data.

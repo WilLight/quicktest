@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace server.DBSystem
+namespace server.DBSystem.UserDataContainers
 {
     /// <summary>
     /// Class, that contains user's log-in data (login & pass).
