@@ -3,7 +3,7 @@ import { RegisterFormProps } from '../components/Signup';
 
 export const authApi = {
    async register(payload: RegisterFormProps): Promise<any> {
-      const { data } = await axios.post<any>('http://localhost:5000/userauth/register', {
+      const { data } = await axios.post('http://localhost:5000/userauth/register', {
          registerData: {
             fullname: payload.fullname,
             // email: payload.email,
@@ -15,13 +15,13 @@ export const authApi = {
       return data;
    },
 
-   async login(payload: any): Promise<any> {
-      const { data } = await axios.post<any>(
-         'http://localhost:8888/api/auth/login',
-         { email: payload.email, password: payload.password },
-         { withCredentials: true },
-      );
+   // async login(payload: any): Promise<any> {
+   //    const { data } = await axios.post(
+   //       'http://localhost:8888/api/auth/login',
+   //       { email: payload.email, password: payload.password },
+   //       { withCredentials: true },
+   //    );
 
-      return data;
-   },
+   //    return data;
+   // },
 };
