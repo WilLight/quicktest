@@ -1,11 +1,15 @@
 import axios from 'axios';
+import { RegisterFormProps } from '../components/Signup';
 
 export const authApi = {
-   async register(payload: any): Promise<any> {
-      const { data } = await axios.post<any>('http://localhost:8888/api/auth/register', {
-         name: payload.email,
-         email: payload.email,
-         password: payload.password,
+   async register(payload: RegisterFormProps): Promise<any> {
+      const { data } = await axios.post<any>('http://localhost:5000/userauth/register', {
+         registerData: {
+            fullname: payload.fullname,
+            // email: payload.email,
+            password: payload.password,
+         },
+         userRole: payload.role,
       });
 
       return data;

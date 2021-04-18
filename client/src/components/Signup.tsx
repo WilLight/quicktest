@@ -1,6 +1,9 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useMutation } from 'react-query';
+import { authApi } from '../api/authApi';
 import { toastify } from '../utils/toastify';
 
 interface Props {
@@ -9,31 +12,40 @@ interface Props {
 }
 
 export interface RegisterFormProps {
-   email: string;
+   fullname: string;
+   // email: string;
    password: string;
-   password2: string;
+   role: string;
 }
 
+const RegisterSchema = yup.object().shape({
+   fullname: yup.string().required('no fullname'),
+   // email: yup.string().email('not valid email').required('no email'),
+   password: yup.string().min(8, 'min password length 8').required(),
+   role: yup.string().required(),
+});
+
 export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
-   const { handleSubmit } = useForm<RegisterFormProps>({});
-   // const { mutateAsync, isLoading, status } = useMutation(authApi.register);
+   const { register, handleSubmit } = useForm({ resolver: yupResolver(RegisterSchema) });
+   const { mutateAsync, isLoading, status } = useMutation(authApi.register);
 
    const onSubmit = async (data: RegisterFormProps) => {
-      //   try {
-      //      await mutateAsync(data);
-      //   } catch (error) {
-      //      setAuth(AuthStatus.ERROR_REGISTRATION);
-      //   }
+      try {
+         await mutateAsync(data);
+      } catch (error) {
+         console.log('error registatrion');
+         //   setAuth(AuthStatus.ERROR_REGISTRATION);
+      }
    };
 
-   //    React.useEffect(() => {
-   //       if (status === 'success') {
-   //          toggleAuthMenu();
-   //          toastify('You have successfully registered, you can now log in.');
-   //       }
+   React.useEffect(() => {
+      if (status === 'success') {
+         toggleAuthMenu();
+         toastify('You have successfully registered, you can now log in.');
+      }
 
-   //       if (status === 'error') toastify('Such e-mail is already registered or passwords do not match.');
-   //    }, [status]);
+      if (status === 'error') toastify('Such e-mail is already registered or passwords do not match.');
+   }, [status]);
 
    const toggleAuthMenu = () => {
       setVisibleSignup(false);
@@ -57,28 +69,28 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input">
                <span>Full Name</span>
-               <input type="text" name="fullname" required />
+               <input type="text" required {...register('fullname')} />
             </div>
             <div className="input">
                <span>Email</span>
-               <input type="email" name="email" required />
+               <input type="email" required {...register('email')} />
             </div>
             <div className="input">
                <span>Password</span>
-               <input type="password" name="password" required />
+               <input type="password" required {...register('password')} />
             </div>
             <div className="rowwrapper">
                <div className="input">
                   <span>I am a teacher</span>
-                  <input type="radio" name="role" value="teacher" required />
+                  <input type="radio" value="teacher" required {...register('role')} />
                </div>
                <div className="input">
                   <span>I am a student</span>
-                  <input type="radio" name="role" value="student" required />
+                  <input type="radio" value="student" required {...register('role')} />
                </div>
             </div>
-            <button type="submit" className="button button--transparent">
-               <span>GO</span>
+            <button disabled={isLoading} type="submit" className="button button--transparent">
+               <span>{isLoading ? 'Loading..' : 'GO'}</span>
             </button>
          </form>
          <div className="auth__bottom">
