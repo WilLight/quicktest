@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 namespace server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class UserAuthController : ControllerBase
     {
         private readonly ILogger<UserAuthController> _logger;
