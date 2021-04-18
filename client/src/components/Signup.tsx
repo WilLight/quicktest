@@ -16,7 +16,7 @@ export interface RegisterFormProps {
 
 export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
    const { handleSubmit } = useForm<RegisterFormProps>({});
-   //    const { mutateAsync, isLoading, status } = useMutation(authApi.register);
+   // const { mutateAsync, isLoading, status } = useMutation(authApi.register);
 
    const onSubmit = async (data: RegisterFormProps) => {
       //   try {
