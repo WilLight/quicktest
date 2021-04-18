@@ -14,7 +14,7 @@ namespace server.DBSystem
         private const string MongoConnectStringPrefix = "mongodb://";
         private const string QuickTestDbName = "quicktest";
         private const string UsersCollectionName = "users";
-        
+
         private IMongoDatabase _database;
         private IMongoCollection<UserData> _usersCollection;
         private uint _lastUserId;
@@ -43,7 +43,14 @@ namespace server.DBSystem
         {
             var allUsers = _usersCollection.Find(new BsonDocument());
 
-            return allUsers.SortByDescending(userDataRecord => userDataRecord.Id).First().Id;
+            if (allUsers.CountDocuments() > 0)
+            {
+                return allUsers.SortByDescending(userDataRecord => userDataRecord.Id).First().Id;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         /// <summary>
@@ -55,11 +62,11 @@ namespace server.DBSystem
         public bool TryLogInUser(UserCredentials userCredentials, out UserData userData)
         {
             var foundedUsers = _usersCollection.Find(userDataRecord => userDataRecord.Credentials == userCredentials);
-            
+
             using var foundedUserStream = foundedUsers.ToCursor();
 
             foundedUserStream.MoveNext();
-            
+
             userData = foundedUserStream.Current.FirstOrDefault();
 
             return foundedUsers.CountDocuments() != 0;
@@ -77,12 +84,12 @@ namespace server.DBSystem
             if (TryLogInUser(userCredentials, out _))
             {
                 userData = null;
-                
+
                 return false;
             }
-            
+
             userData = new UserData(++_lastUserId, userCredentials, role);
-            
+
             _usersCollection.InsertOne(userData);
 
             return true;
@@ -113,7 +120,7 @@ namespace server.DBSystem
             using var allDatabasesStream = _database.ListCollections();
 
             allDatabasesStream.MoveNext();
-            
+
             return allDatabasesStream.Current.Count();
         }
 
