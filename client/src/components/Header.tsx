@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Login } from './Login';
 import { Signup } from './Signup';
 
@@ -15,12 +16,18 @@ export const Header: React.FC = () => {
    return (
       <>
          <header className="header">
-            <div className="logo">
+            <Link to="/" className="logo">
                <span>QuickTest</span>
-            </div>
+            </Link>
             <div className="header__nav">
-               <button onClick={toggleVisibleAuth}>Account</button>
-               <button>Add</button>
+               <button className="header__navitem" onClick={toggleVisibleAuth}>
+                  Account
+               </button>
+               <Link to="/modules" className="header__navitem">
+                  Your modules
+               </Link>
+               <button className="header__navitem">Discover</button>
+               <button className="header__navitem">Add</button>
             </div>
          </header>
          <div className={visibleAuth ? 'auth auth--visible' : 'auth'}>

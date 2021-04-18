@@ -56,6 +56,10 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          </div>
          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input">
+               <span>Full Name</span>
+               <input type="text" name="fullname" required />
+            </div>
+            <div className="input">
                <span>Email</span>
                <input type="email" name="email" required />
             </div>
@@ -63,9 +67,15 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
                <span>Password</span>
                <input type="password" name="password" required />
             </div>
-            <div className="input">
-               <span>Confirm password</span>
-               <input type="password" name="password2" required />
+            <div className="rowwrapper">
+               <div className="input">
+                  <span>I am a teacher</span>
+                  <input type="radio" name="role" value="teacher" required />
+               </div>
+               <div className="input">
+                  <span>I am a student</span>
+                  <input type="radio" name="role" value="student" required />
+               </div>
             </div>
             <button type="submit" className="button button--transparent">
                <span>GO</span>

@@ -10,6 +10,12 @@
    padding: 0 20px;
 }
 
+.rowwrapper {
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+}
+
 .overlay {
    z-index: 100;
    position: fixed;
