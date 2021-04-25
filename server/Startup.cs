@@ -37,6 +37,14 @@ namespace server
 
             app.UseRouting();
 
+#if DEBUG
+            app.UseCors(x =>
+                x.AllowAnyMethod()
+                .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true)
+                .AllowCredentials());
+#endif
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
