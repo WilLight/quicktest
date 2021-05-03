@@ -6,7 +6,8 @@
 @import './components/auth';
 @import './components/button';
 
-@import './modules/modals';
+@import './pages/modules';
+@import './pages/dashboard';
 
 body {
    margin: 0;
@@ -56,6 +57,11 @@ h3,
 h4,
 h5,
 h6,
-p {
+p,
+ul {
    margin: 0;
+}
+
+ul {
+   padding: 0;
 }

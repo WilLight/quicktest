@@ -33,9 +33,12 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
       try {
          await mutateAsync(data);
       } catch (error) {
-         console.log('error registatrion');
-         //   setAuth(AuthStatus.ERROR_REGISTRATION);
+         console.log('error registatrion'); 
       }
+   };
+
+   const toggleAuthMenu = () => {
+      setVisibleSignup(false);
    };
 
    React.useEffect(() => {
@@ -43,13 +46,11 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          toggleAuthMenu();
          toastify('You have successfully registered, you can now log in.');
       }
-
       if (status === 'error') toastify('Such e-mail is already registered or passwords do not match.');
+   // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [status]);
 
-   const toggleAuthMenu = () => {
-      setVisibleSignup(false);
-   };
+
 
    return (
       <div className="auth__container">

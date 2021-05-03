@@ -15,13 +15,12 @@ export const authApi = {
       return data;
    },
 
-   // async login(payload: any): Promise<any> {
-   //    const { data } = await axios.post(
-   //       'http://localhost:8888/api/auth/login',
-   //       { email: payload.email, password: payload.password },
-   //       { withCredentials: true },
-   //    );
+   async login(payload: any): Promise<any> {
+      const { data } = await axios.post('http://localhost:5000/userauth/login', {
+         email: payload.email,
+         password: payload.password,
+      });
 
-   //    return data;
-   // },
+      return data;
+   },
 };

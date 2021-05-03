@@ -1,5 +1,10 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
+import { useHistory } from 'react-router-dom';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup'; 
+import { authApi } from '../api/authApi';
 import { toastify } from '../utils/toastify';
 
 interface Props {
@@ -12,25 +17,29 @@ export interface LoginFormProps {
    password: string;
 }
 
+const LoginSchema = yup.object().shape({ 
+   email: yup.string().email('not valid email').required('no email'),
+   password: yup.string().min(8, 'min password length 8').required(), 
+});
+
 export const Login: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
-   const { handleSubmit } = useForm<LoginFormProps>({});
-   //    const { mutateAsync, isLoading, status } = useMutation(authApi.login);
+   const history = useHistory();
+   const { handleSubmit, register } = useForm<LoginFormProps>({ resolver: yupResolver(LoginSchema) });
+   const { mutateAsync, isLoading, status } = useMutation(authApi.login);
 
    const onSubmit = async (data: LoginFormProps) => {
-      //   try {
-      //      await mutateAsync(data);
-      //   } catch (error) {
-      //      setAuth(AuthStatus.ERROR_LOGIN);
-      //   }
+      try {
+         await mutateAsync(data);
+      } catch (error) {
+         console.log(error);
+      }
    };
 
-   //    React.useEffect(() => {
-   //       if (status === 'success') {
-   //          //  router.push('/account');
-   //       }
-
-   //       if (status === 'error') toastify('Not valid email or password');
-   //    }, [status]);
+   React.useEffect(() => {
+      if (status === 'success') history.push('/account');
+      if (status === 'error') toastify('Not valid email or password');
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, [status]);
 
    const toggleAuthMenu = () => {
       setVisibleSignup(true);
@@ -54,14 +63,14 @@ export const Login: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input">
                <span>Email</span>
-               <input type="email" name="email" required />
+               <input type="email"  required {...register('email')} />
             </div>
             <div className="input">
                <span>Password</span>
-               <input type="password" name="password" required />
+               <input type="password"   required {...register('password')} />
             </div>
             <button type="submit" className="button button--transparent">
-               <span>GO</span>
+               <span>{isLoading ? 'Loading..' : 'GO'}</span>
             </button>
          </form>
          <div className="auth__bottom">

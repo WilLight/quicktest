@@ -16,6 +16,8 @@ export const Header: React.FC = () => {
    return (
       <>
          <header className="header">
+            <div className="container ">
+            <div className="header__inner flex-row justify-between">
             <Link to="/" className="logo">
                <span>QuickTest</span>
             </Link>
@@ -28,6 +30,8 @@ export const Header: React.FC = () => {
                </Link>
                <button className="header__navitem">Discover</button>
                <button className="header__navitem">Add</button>
+            </div>
+            </div>
             </div>
          </header>
          <div className={visibleAuth ? 'auth auth--visible' : 'auth'}>
