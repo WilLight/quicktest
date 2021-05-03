@@ -1,0 +1,50 @@
+.header {
+   margin: 1% 0;
+   height: 70px;
+
+   .container {
+      height: 100%;
+   }
+
+   &__inner {
+      height: 100%;
+      padding: 0 2.5%;
+      border-radius: 50px;
+      background-color: $blue;
+   }
+
+   &__nav {
+      display: flex;
+      align-items: center;
+      margin-left: 2rem;
+   }
+
+   &__navitem {
+      padding: 3px 15px;
+      margin: 0 10px;
+      font-weight: 500;
+      border-radius: 30px;
+      color: $dark;
+      border: 2px solid $dark;
+      background-color: #fff;
+
+      &:hover {
+         background-color: $dark;
+         color: #fff;
+         border: 2px solid #fff;
+      }
+   }
+}
+
+.logo {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   span {
+      color: transparent;
+      -webkit-text-stroke: 1px $dark;
+      font-weight: 700;
+      font-size: 38px;
+   }
+}
