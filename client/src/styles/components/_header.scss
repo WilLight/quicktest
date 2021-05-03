@@ -1,12 +1,17 @@
 .header {
-   padding: 0 2.5%;
-   margin: 1%;
+   margin: 1% 0;
    height: 70px;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   border-radius: 50px;
-   background-color: $blue;
+
+   .container {
+      height: 100%;
+   }
+
+   &__inner {
+      height: 100%;
+      padding: 0 2.5%;
+      border-radius: 50px;
+      background-color: $blue;
+   }
 
    &__nav {
       display: flex;

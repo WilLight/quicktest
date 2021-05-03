@@ -1,6 +1,8 @@
 import { Switch, Route } from 'react-router-dom';
 import { Header } from './components/Header';
-import Modals from './modules/Modals';
+import { Account } from './pages/Account';
+import { Classroom } from './pages/Classroom';
+import {Modules} from './pages/Modules';
 
 function App() {
    return (
@@ -8,7 +10,9 @@ function App() {
          <Header />
          <div className="container">
             <Switch>
-               <Route path="/modules" component={Modals} exact />
+               <Route path="/modules" component={Modules} exact />
+               <Route path="/account" component={Account} exact />
+               <Route path="/classroom" component={Classroom} exact />
             </Switch>
          </div>
       </>
