@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+
 using server.DBSystem;
 using server.DBSystem.UserDataContainers;
-using Newtonsoft.Json.Linq;
 
 namespace server.Controllers
 {
@@ -51,6 +52,14 @@ namespace server.Controllers
             {
                 return NotFound();
             }
+        }
+
+        [HttpPost]
+        public ActionResult<bool> Remove(uint userId)
+        {
+            _dbManager.RemoveUser(userId);
+
+            return Ok();
         }
     }
 }
