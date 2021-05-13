@@ -22,6 +22,7 @@ namespace server.Controllers
         {
             _logger = logger;
             _dbManager = dbManager;
+            _dbManager.Initialize();
         }
 
         [HttpPost]
