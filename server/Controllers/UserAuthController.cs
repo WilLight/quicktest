@@ -47,11 +47,11 @@ namespace server.Controllers
             UserData userData;
             if (_dbManager.TryRegisterUser(userRole, registerData, out userData))
             {
-                return Ok();
+                return Ok(userData);
             }
             else
             {
-                return NotFound();
+                return BadRequest();
             }
         }
 
