@@ -17,21 +17,23 @@ export const Header: React.FC = () => {
       <>
          <header className="header">
             <div className="container ">
-            <div className="header__inner flex-row justify-between">
-            <Link to="/" className="logo">
-               <span>QuickTest</span>
-            </Link>
-            <div className="header__nav">
-               <button className="header__navitem" onClick={toggleVisibleAuth}>
-                  Account
-               </button>
-               <Link to="/modules" className="header__navitem">
-                  Your modules
-               </Link>
-               <button className="header__navitem">Discover</button>
-               <button className="header__navitem">Add</button>
-            </div>
-            </div>
+               <div className="header__inner flex-row justify-between">
+                  <Link to="/" className="logo">
+                     <span>QuickTest</span>
+                  </Link>
+                  <div className="header__nav">
+                     <button className="header__navitem" onClick={toggleVisibleAuth}>
+                        Account
+                     </button>
+                     <Link to="/modules" className="header__navitem">
+                        Your tests
+                     </Link>
+                     <button className="header__navitem">Discover</button>
+                     <Link to="/create" className="header__navitem">
+                        Create
+                     </Link>
+                  </div>
+               </div>
             </div>
          </header>
          <div className={visibleAuth ? 'auth auth--visible' : 'auth'}>

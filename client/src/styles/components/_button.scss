@@ -51,4 +51,17 @@
          background-color: darken($color: $dark, $amount: 5);
       }
    }
+
+   &__content--white {
+      position: relative;
+      color: #fff;
+      transition: background-color, 0.1s linear;
+
+      &:hover {
+         background-color: $dark;
+      }
+      &:active {
+         background-color: darken($color: $dark, $amount: 5);
+      }
+   }
 }

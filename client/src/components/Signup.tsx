@@ -13,14 +13,14 @@ interface Props {
 
 export interface RegisterFormProps {
    fullname: string;
-   // email: string;
+   email: string;
    password: string;
    role: string;
 }
 
 const RegisterSchema = yup.object().shape({
    fullname: yup.string().required('no fullname'),
-   // email: yup.string().email('not valid email').required('no email'),
+   email: yup.string().email('not valid email').required('no email'),
    password: yup.string().min(8, 'min password length 8').required(),
    role: yup.string().required(),
 });
@@ -46,7 +46,7 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          toggleAuthMenu();
          toastify('You have successfully registered, you can now log in.');
       }
-      if (status === 'error') toastify('Such e-mail is already registered or passwords do not match.');
+      if (status === 'error') toastify('Such e-mail is already registered.');
    // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [status]);
 
@@ -80,7 +80,7 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
                <span>Password</span>
                <input type="password" required {...register('password')} />
             </div>
-            <div className="rowwrapper">
+            <div className="flex-row justify-between">
                <div className="input">
                   <span>I am a teacher</span>
                   <input type="radio" value="teacher" required {...register('role')} />

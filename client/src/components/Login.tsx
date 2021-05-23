@@ -36,7 +36,10 @@ export const Login: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
    };
 
    React.useEffect(() => {
-      if (status === 'success') history.push('/account');
+      if (status === 'success') {
+         onCloseMenu();
+         history.push('/account')
+      };
       if (status === 'error') toastify('Not valid email or password');
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [status]);
