@@ -1,0 +1,46 @@
+.popup {
+   width: 100%;
+   background-color: $blue;
+   color: #fff;
+   border-radius: 25px;
+   cursor: pointer;
+
+   button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 15px 20px;
+      font-weight: 600;
+      color: inherit;
+   }
+
+   &__list {
+      z-index: 20;
+      position: relative;
+      width: 100%;
+      cursor: pointer;
+
+      ul {
+         position: absolute;
+         top: 10px;
+         max-height: 220px;
+         overflow: auto;
+         width: 100%;
+         background-color: lighten($color: $blue, $amount: 10);
+         color: #fff;
+         font-weight: 600;
+         border-radius: 25px;
+
+         li {
+            flex-basis: 100%;
+            padding: 15px;
+
+            &:hover,
+            &:focus {
+               background-color: $blue;
+            }
+         }
+      }
+   }
+}

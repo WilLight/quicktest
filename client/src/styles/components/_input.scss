@@ -33,3 +33,23 @@
       border-radius: 10px;
    }
 }
+
+.input--white {
+   &:focus-within {
+      span {
+         color: $yellow;
+      }
+      input {
+         border: 2px solid $yellow;
+      }
+   }
+
+   span {
+      color: #fff;
+   }
+
+   input {
+      color: #fff;
+      border: 2px solid #fff;
+   }
+}

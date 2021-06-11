@@ -1,0 +1,30 @@
+.create {
+   &__header {
+      margin-bottom: 25px;
+      text-align: center;
+   }
+
+   &__block {
+      margin: 2rem 0;
+      padding: 1rem;
+      background-color: $blue;
+      border-radius: 25px;
+
+      button {
+         width: 100%;
+         border: 2px solid #fff;
+         color: #fff;
+      }
+   }
+
+   &__qa {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+
+      .input {
+         flex-basis: 100%;
+      }
+   }
+}

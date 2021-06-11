@@ -1,0 +1,29 @@
+{
+   "terms": [
+      {
+         "id": "A123",
+         "question": "able",
+         "answer": "zdolny"
+      },
+      {
+         "id": "A124",
+         "question": "abroad",
+         "answer": "za granicą"
+      },
+      {
+         "id": "A125",
+         "question": "accept",
+         "answer": "zaakceptować"
+      },
+      {
+         "id": "A125",
+         "question": "distance",
+         "answer": "dystans"
+      },
+      {
+         "id": "A125",
+         "question": "way",
+         "answer": "droga"
+      }
+   ]
+}
