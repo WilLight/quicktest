@@ -25,7 +25,7 @@ export const Header: React.FC = () => {
                      <button className="header__navitem" onClick={toggleVisibleAuth}>
                         Account
                      </button>
-                     <Link to="/modules" className="header__navitem">
+                     <Link to="/tests" className="header__navitem">
                         Your tests
                      </Link>
                      <button className="header__navitem">Discover</button>

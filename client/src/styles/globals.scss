@@ -7,10 +7,12 @@
 @import './components/button';
 @import './components/modal';
 @import './components/popup';
+@import './components/sendForm';
 
 @import './pages/modules';
 @import './pages/dashboard';
 @import './pages/create';
+@import './pages/test';
 
 body {
    margin: 0;

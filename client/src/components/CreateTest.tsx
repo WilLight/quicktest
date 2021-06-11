@@ -1,6 +1,9 @@
 import React from 'react';
-const arr = [0, 1, 2, 3, 4];
+
 export const CreateTest = () => {
+   const [termCount, setTermCount] = React.useState<number>(1);
+   const incTermCount = () => setTermCount(termCount + 1);
+
    return (
       <>
          <div className="create__block">
@@ -13,20 +16,29 @@ export const CreateTest = () => {
                <input type="text" />
             </div>
          </div>
-         {arr.map((_, i) => (
-            <div key={i} className="create__block">
-               <div className="create__qa">
-                  <div className="input input--white">
-                     <span>Term</span>
-                     <input type="text" />
-                  </div>
-                  <div className="input input--white">
-                     <span>Defitinion</span>
-                     <input type="text" />
+
+         {Array(termCount)
+            .fill(0)
+            .map((_, index) => (
+               <div key={index} className="create__block">
+                  <div className="create__qa">
+                     <div className="input input--white">
+                        <span>Term</span>
+                        <input type="text" />
+                     </div>
+                     <div className="input input--white">
+                        <span>Defitinion</span>
+                        <input type="text" />
+                     </div>
                   </div>
                </div>
-            </div>
-         ))}
+            ))}
+
+         <div className="create__block">
+            <button onClick={incTermCount} type="submit" className="button button--transparent">
+               <span>Add term</span>
+            </button>
+         </div>
          <div className="create__block">
             <button type="submit" className="button button--transparent">
                <span>Create Test</span>
