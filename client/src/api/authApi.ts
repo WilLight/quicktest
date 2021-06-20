@@ -1,12 +1,13 @@
 import axios from 'axios';
+import { LoginFormProps } from '../components/Login';
 import { RegisterFormProps } from '../components/Signup';
+import { UserInterface } from '../interfaces';
 
 export const authApi = {
-   async register(payload: RegisterFormProps): Promise<any> {
+   async register(payload: RegisterFormProps): Promise<UserInterface> {
       const { data } = await axios.post('http://localhost:5000/userauth/register', {
          registerData: {
-            fullname: payload.fullname,
-            // email: payload.email,
+            login: payload.login,
             password: payload.password,
          },
          userRole: payload.role,
@@ -15,9 +16,9 @@ export const authApi = {
       return data;
    },
 
-   async login(payload: any): Promise<any> {
+   async login(payload: LoginFormProps): Promise<UserInterface> {
       const { data } = await axios.post('http://localhost:5000/userauth/login', {
-         email: payload.email,
+         login: payload.login,
          password: payload.password,
       });
 
