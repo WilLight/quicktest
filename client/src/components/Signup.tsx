@@ -12,45 +12,34 @@ interface Props {
 }
 
 export interface RegisterFormProps {
-   fullname: string;
-   email: string;
+   login: string;
    password: string;
    role: string;
 }
 
 const RegisterSchema = yup.object().shape({
-   fullname: yup.string().required('no fullname'),
-   email: yup.string().email('not valid email').required('no email'),
+   login: yup.string().required('no nickname'),
    password: yup.string().min(8, 'min password length 8').required(),
    role: yup.string().required(),
 });
 
 export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
    const { register, handleSubmit } = useForm({ resolver: yupResolver(RegisterSchema) });
-   const { mutateAsync, isLoading, status } = useMutation(authApi.register);
+   const { mutateAsync, isLoading } = useMutation(authApi.register);
 
    const onSubmit = async (data: RegisterFormProps) => {
       try {
          await mutateAsync(data);
+         toggleAuthMenu();
+         toastify('You have successfully registered, you can now log in.');
       } catch (error) {
-         console.log('error registatrion'); 
+         toastify('Such e-mail is already registered.');
       }
    };
 
    const toggleAuthMenu = () => {
       setVisibleSignup(false);
    };
-
-   React.useEffect(() => {
-      if (status === 'success') {
-         toggleAuthMenu();
-         toastify('You have successfully registered, you can now log in.');
-      }
-      if (status === 'error') toastify('Such e-mail is already registered.');
-   // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [status]);
-
-
 
    return (
       <div className="auth__container">
@@ -69,12 +58,8 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          </div>
          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input">
-               <span>Full Name</span>
-               <input type="text" required {...register('fullname')} />
-            </div>
-            <div className="input">
-               <span>Email</span>
-               <input type="email" required {...register('email')} />
+               <span>Nickname via Login</span>
+               <input type="text" required {...register('login')} />
             </div>
             <div className="input">
                <span>Password</span>

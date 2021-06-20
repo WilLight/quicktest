@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { sessionMemory } from '../utils/sessionMemory';
 import { Login } from './Login';
 import { Signup } from './Signup';
 
@@ -22,9 +23,15 @@ export const Header: React.FC = () => {
                      <span>QuickTest</span>
                   </Link>
                   <div className="header__nav">
-                     <button className="header__navitem" onClick={toggleVisibleAuth}>
-                        Account
-                     </button>
+                     {!sessionMemory.get('userdata') ? (
+                        <button className="header__navitem" onClick={toggleVisibleAuth}>
+                           Account
+                        </button>
+                     ) : (
+                        <Link to="/account" className="header__navitem">
+                           Account
+                        </Link>
+                     )}
                      <Link to="/tests" className="header__navitem">
                         Your tests
                      </Link>
