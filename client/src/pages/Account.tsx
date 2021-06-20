@@ -22,7 +22,7 @@ export const Account = () => {
          <div className="dashboard__header">
             <div className="dashboard__profile flex-column">
                <span>{userData ? userData.id : ''}</span>
-               <span>{userData ? userData.credentials.login : ''}</span>
+               <span>{userData && userData.credentials ? userData.credentials.login : ''}</span>
             </div>
             <div className="dashboard__items">
                <button className="dashboard__button dashboard__button--active">Classes</button>
