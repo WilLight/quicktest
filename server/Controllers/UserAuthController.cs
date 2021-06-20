@@ -31,7 +31,7 @@ namespace server.Controllers
             UserData userData;
             if (_dbManager.TryLogInUser(loginData, out userData))
             {
-                return Ok();
+                return Ok(userData);
             }
             else
             {
