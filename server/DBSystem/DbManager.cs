@@ -86,6 +86,18 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out userData, foundedUsers);
         }
 
+        public bool TryGetUserByName (string login, out UserData userData)
+        {
+            var foundUser = _usersCollection.Find(userDataRecord => userDataRecord.Credentials.Login == login);
+            if (foundUser != null)
+            {
+                return ProceedFoundedInfo(out userData, foundUser);
+                return true;
+            }
+            userData = null;
+            return false;
+        }
+
         /// <summary>
         /// Try to register new user with provided credentials.
         /// </summary>
@@ -96,6 +108,12 @@ namespace server.DBSystem
         public bool TryRegisterUser (UserRole role, UserCredentials userCredentials, out UserData userData)
         {
             if (TryLogInUser(userCredentials, out _))
+            {
+                userData = null;
+
+                return false;
+            }
+            if (TryGetUserByName(userCredentials.Login, out userData))
             {
                 userData = null;
 
