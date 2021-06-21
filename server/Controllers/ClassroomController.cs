@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 using server.DBSystem;
+using server.DBSystem.UserDataContainers;
 using server.DBSystem.ClassroomDataContainers;
 
 namespace server.Controllers
@@ -27,10 +28,28 @@ namespace server.Controllers
 
         //TODO: Will need to use cookies to authorise all of these
         [HttpGet]
-        public ActionResult<List<string>> GetNames()
+        public ActionResult<IEnumerable<ClassroomData>> GetClassrooms(uint userId)
         {
-            //TODO: Get a list of classrooms
-            throw new Exception("Not implemented");
+            if (!_dbManager.TryGetUserData(userId, out var userData))
+            {
+                return BadRequest("There is no such userId");
+            }
+            if (userData.UserRole == UserRole.Teacher)
+            {
+                if (_dbManager.TryGetClassroomsByTeacher(userId, out var classrooms))
+                {
+                    return Ok(classrooms);
+                }
+            }
+            else
+            {
+                if (_dbManager.TryGetClassroomsByStudent(userId, out var classrooms))
+                {
+                    return Ok(classrooms);
+                }
+            }
+
+            return NotFound();
         }
 
         [HttpGet]

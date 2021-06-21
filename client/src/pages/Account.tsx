@@ -3,7 +3,9 @@
 
 import React from 'react';
 import { useHistory } from 'react-router';
+import { classroomApi } from '../api/classroomApi';
 import { UserInterface } from '../interfaces';
+import { ClassroomInterface } from '../interfaces';
 import { sessionMemory } from '../utils/sessionMemory';
 
 export const Account = () => {

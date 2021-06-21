@@ -12,3 +12,10 @@ export interface UserInterface {
    };
    userRole: number;
 }
+
+export interface ClassroomInterface {
+   readonly roomId: number;
+   readonly teacherId: number;
+   readonly studentIds?: number[];
+   readonly inviteToken: string;
+}

@@ -63,7 +63,7 @@ export const Classroom = () => {
             </div>
             <div className="modal__block">
                <div className="modal__message">
-                  To invite students to this class, add their QuickTest usernames or emails below (separate by commas or line
+                  To invite students to this class, add their QuickTest usernames below (separate by commas or line
                   breaks).
                </div>
                <form className="flex-row justify-between">
