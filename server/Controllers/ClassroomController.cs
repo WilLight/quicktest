@@ -67,10 +67,12 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ClassroomData> Add(uint userId)
+        public ActionResult<ClassroomData> Add([FromBody] JObject data)
         {
+            uint userId = data["userId"].ToObject<uint>();
+            string roomName = data["roomName"].ToObject<string>();
             ClassroomData createdClassroom;
-            if (_dbManager.TryCreateClassroom(userId, new List<uint>(), out createdClassroom))
+            if (_dbManager.TryCreateClassroom(userId, roomName, new List<uint>(), out createdClassroom))
             {
                 return Ok(createdClassroom);
             }

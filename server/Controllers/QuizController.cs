@@ -65,12 +65,13 @@ namespace server.Controllers
         public ActionResult<QuizData> AddQuiz([FromBody] JObject data)
         {
             var ownerId = data["ownerId"].ToObject<uint>();
+            var quizName = data["quizName"].ToObject<string>();
             var quizQuestions = data["questions"].ToObject<IEnumerable<QuizQuestionData>>().ToList();
             if (!_dbManager.TryGetUserData(ownerId, out var userData) || userData.UserRole != UserRole.Teacher)
             {
                 return BadRequest("There is no teacher with such userId");
             }
-            if (_dbManager.TryCreateQuiz(ownerId, quizQuestions, out var quizData))
+            if (_dbManager.TryCreateQuiz(ownerId, quizName, quizQuestions, out var quizData))
             {
                 return Ok(quizData);
             }
