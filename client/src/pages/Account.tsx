@@ -2,7 +2,7 @@
 // данные пользователя
 
 import React from 'react';
-import { useMutation } from 'react-query';
+import { useQuery } from 'react-query';
 import { classroomApi } from '../api/classroomApi';
 import { UserInterface } from '../interfaces';
 import { sessionMemory } from '../utils/sessionMemory';
@@ -14,7 +14,9 @@ export const Account = () => {
    }, [userData]);
 
    /* classes */
-   const { data: classes } = useMutation('classes', () => classroomApi.getById(userData.id));
+   const { data: classes } = useQuery(['classes', userData ? userData.id : 0], () =>
+      classroomApi.getById(userData ? userData.id : 0),
+   );
 
    return (
       <div className="dashboard">
@@ -35,8 +37,8 @@ export const Account = () => {
             {classes
                ? classes.map((content) => (
                     <li className="modules__card">
-                       <h3>{content.roomId}</h3>
-                       <span>{content.studentIds?.length} students</span>
+                       <h3>{content.roomName}</h3>
+                       <span>{content.studentIds?.length ? content.studentIds?.length : 0} students</span>
                     </li>
                  ))
                : undefined}

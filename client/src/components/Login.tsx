@@ -45,7 +45,7 @@ export const Login: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
    }, [data]);
 
    React.useEffect(() => {
-      if (status === 'error') toastify('Not valid email or password');
+      if (status === 'error') toastify('Not valid payload');
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [status]);
 

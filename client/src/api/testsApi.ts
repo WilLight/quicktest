@@ -13,7 +13,7 @@ export const testsApi = {
    },
 
    async add(payload: TestInterface): Promise<TestInterface> {
-      const { data } = await axios.post('http://localhost:5000/quiz/addquiz', { payload });
+      const { data } = await axios.post('http://localhost:5000/quiz/addquiz', payload);
       return data;
    },
 };

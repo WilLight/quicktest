@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMutation } from 'react-query';
+import { useQuery } from 'react-query';
 import { useParams } from 'react-router-dom';
 import { testsApi } from '../api/testsApi';
 import { QuestionInterface } from '../interfaces';
@@ -14,7 +14,7 @@ export const Test: React.FC = () => {
    const [nextStage, setNextStage] = React.useState<boolean>(false);
 
    const params: { id: string } = useParams();
-   const { data: tests } = useMutation(['tests'], () => testsApi.getByQuiz(parseInt(params.id)));
+   const { data: tests } = useQuery(['tests', params.id], () => testsApi.getByQuiz(parseInt(params.id)));
    React.useEffect(() => {
       if (tests) setTerm(tests.questions.sort(() => Math.random() - 0.5));
    }, [tests]);
