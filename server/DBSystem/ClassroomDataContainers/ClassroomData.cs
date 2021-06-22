@@ -11,12 +11,15 @@ namespace server.DBSystem.ClassroomDataContainers
     {
         private readonly uint _roomId;
         private readonly uint _teacherId;
+        private readonly string _roomName;
         private readonly List<uint> _studentsIds;
         private readonly string _inviteToken;
 
         public uint RoomId => _roomId;
 
         public uint TeacherId => _teacherId;
+
+        public string RoomName => _roomName;
 
         public List<uint> StudentsIds => _studentsIds;
 
@@ -28,10 +31,11 @@ namespace server.DBSystem.ClassroomDataContainers
             }
         }
 
-        public ClassroomData(uint roomId, uint teacherId, List<uint> studentsIds, string inviteToken)
+        public ClassroomData(uint roomId, uint teacherId, string roomName, List<uint> studentsIds, string inviteToken)
         {
             _roomId = roomId;
             _teacherId = teacherId;
+            _roomName = roomName;
             _studentsIds = studentsIds ?? new List<uint>();
             _inviteToken = inviteToken;
         }
@@ -40,6 +44,7 @@ namespace server.DBSystem.ClassroomDataContainers
         {
             _roomId = anotherClassroomData.RoomId;
             _teacherId = anotherClassroomData.TeacherId;
+            _roomName = anotherClassroomData.RoomName;
             _studentsIds = anotherClassroomData.StudentsIds ?? new List<uint>();
             _inviteToken = anotherClassroomData.InviteToken;
         }

@@ -89,7 +89,7 @@ namespace server.DBSystem
                 return 0;
             }
 
-            return allQuizes.SortByDescending(classroomDataRecord => classroomDataRecord.QuizId).First().QuizId;
+            return allQuizes.SortByDescending(quizDataRecord => quizDataRecord.QuizId).First().QuizId;
         }
 
         public bool TryGetClassroomsByTeacher(uint userId, out IEnumerable<ClassroomData> classrooms)
@@ -98,7 +98,9 @@ namespace server.DBSystem
 
             if (foundClassrooms.CountDocuments() != 0)
             {
-                classrooms = foundClassrooms.ToCursor().Current;
+                var classroomsCursor = foundClassrooms.ToCursor();
+                classroomsCursor.MoveNext();
+                classrooms = classroomsCursor.Current.AsEnumerable<ClassroomData>();
                 return true;
             }
             classrooms = null;
@@ -111,7 +113,9 @@ namespace server.DBSystem
 
             if (foundClassrooms.CountDocuments() != 0)
             {
-                classrooms = foundClassrooms.ToCursor().Current;
+                var classroomsCursor = foundClassrooms.ToCursor();
+                classroomsCursor.MoveNext();
+                classrooms = classroomsCursor.Current.AsEnumerable<ClassroomData>();
                 return true;
             }
             classrooms = null;
@@ -134,9 +138,8 @@ namespace server.DBSystem
         public bool TryGetUserByName(string login, out UserData userData)
         {
             var foundUser = _usersCollection.Find(userDataRecord => userDataRecord.Credentials.Login == login);
-            if (foundUser != null)
+            if (ProceedFoundedInfo(out userData, foundUser))
             {
-                ProceedFoundedInfo(out userData, foundUser);
                 return true;
             }
             userData = null;
@@ -185,7 +188,7 @@ namespace server.DBSystem
             );
         }
 
-        public bool TryCreateClassroom(uint userId, List<uint> students, out ClassroomData classroomData)
+        public bool TryCreateClassroom(uint userId, string roomName, List<uint> students, out ClassroomData classroomData)
         {
             if (!TryGetUserData(userId, out var userData) || userData.UserRole != UserRole.Teacher)
             {
@@ -196,7 +199,7 @@ namespace server.DBSystem
 
             uint newRoomId = ++_lastClassroomId;
 
-            classroomData = new ClassroomData(newRoomId, userId, students, $"{newRoomId.ToString()}{userId.ToString()}");
+            classroomData = new ClassroomData(newRoomId, userId, roomName, students, $"{newRoomId.ToString()}{userId.ToString()}");
 
             _classroomsCollection.InsertOne(classroomData);
 
@@ -258,7 +261,7 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out classroomData, foundedClassrooms);
         }
 
-        public bool TryCreateQuiz(uint ownerId, List<QuizQuestionData> questions, out QuizData quizData)
+        public bool TryCreateQuiz(uint ownerId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
         {
             if (!TryGetUserData(ownerId, out var userData) || userData.UserRole != UserRole.Teacher)
             {
@@ -269,7 +272,7 @@ namespace server.DBSystem
 
             uint newQuizId = ++_lastQuizId;
 
-            quizData = new QuizData(newQuizId, ownerId, new List<uint>(), questions);
+            quizData = new QuizData(newQuizId, ownerId, quizName, new List<uint>(), questions);
 
             _quizesCollection.InsertOne(quizData);
 
@@ -325,7 +328,9 @@ namespace server.DBSystem
 
             if (foundQuizes.CountDocuments() != 0)
             {
-                quizDatas = foundQuizes.ToCursor().Current;
+                var quizesCursor = foundQuizes.ToCursor();
+                quizesCursor.MoveNext();
+                quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
                 return true;
             }
             quizDatas = null;
@@ -338,7 +343,9 @@ namespace server.DBSystem
 
             if (foundQuizes.CountDocuments() != 0)
             {
-                quizDatas = foundQuizes.ToCursor().Current;
+                var quizesCursor = foundQuizes.ToCursor();
+                quizesCursor.MoveNext();
+                quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
                 return true;
             }
             quizDatas = null;

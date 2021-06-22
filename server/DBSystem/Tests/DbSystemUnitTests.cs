@@ -13,13 +13,13 @@ namespace server.DBSystem.Tests
     {
         private readonly DbTestsFixture _dbManagerContainer;
 
-        public DbSystemUnitTests (DbTestsFixture dbManagerContainer)
+        public DbSystemUnitTests(DbTestsFixture dbManagerContainer)
         {
             _dbManagerContainer = dbManagerContainer;
         }
 
         [Fact]
-        public void GetCountOfTablesFromDb ()
+        public void GetCountOfTablesFromDb()
         {
             const int expectedCountOfTables = 2;
 
@@ -27,7 +27,7 @@ namespace server.DBSystem.Tests
         }
 
         [Fact]
-        public void TryLogIn5Accounts2Success3Fails ()
+        public void TryLogIn5Accounts2Success3Fails()
         {
             var testUserCredentials = new[]
             {
@@ -58,7 +58,7 @@ namespace server.DBSystem.Tests
         }
 
         [Fact]
-        public void GetLastUserIdFromTable ()
+        public void GetLastUserIdFromTable()
         {
             const uint expectedId = 0;
 
@@ -66,7 +66,7 @@ namespace server.DBSystem.Tests
         }
 
         [Fact]
-        public void Create3NewUsersAnd1OldAndCheck ()
+        public void Create3NewUsersAnd1OldAndCheck()
         {
             var testUserCredentials = new[]
             {
@@ -109,7 +109,7 @@ namespace server.DBSystem.Tests
         }
 
         [Fact]
-        public void GetLastClassroomIdFromTable ()
+        public void GetLastClassroomIdFromTable()
         {
             const uint expectedId = 0;
 
@@ -117,32 +117,32 @@ namespace server.DBSystem.Tests
         }
 
         [Fact]
-        public void CreateClassroom ()
+        public void CreateClassroom()
         {
             ClassroomData classroomData = CreateNewClassroom();
             Assert.NotNull(classroomData);
             _dbManagerContainer.DbManager.RemoveClassroom(classroomData.RoomId);
         }
 
-        private ClassroomData CreateNewClassroom ()
+        private ClassroomData CreateNewClassroom()
         {
             DbManager dbManagerInstance = _dbManagerContainer.DbManager;
             UserCredentials fakeUserCredentials = new UserCredentials(Faker.Name.First(), Faker.Name.Last());
             dbManagerInstance.TryRegisterUser(UserRole.Teacher, fakeUserCredentials, out UserData newUserData);
-            dbManagerInstance.TryCreateClassroom(newUserData.Id, null, out ClassroomData newClassroomData);
+            dbManagerInstance.TryCreateClassroom(newUserData.Id, " ", null, out ClassroomData newClassroomData);
 
             return newClassroomData;
         }
-        
+
         [Fact]
-        public void AddUserToClassroomById ()
+        public void AddUserToClassroomById()
         {
             ClassroomData classroomData = CreateNewClassroom();
             UserCredentials fakeUserCredentials = new UserCredentials(Faker.Name.First(), Faker.Name.Last());
             _dbManagerContainer.DbManager.TryRegisterUser(UserRole.Student, fakeUserCredentials, out var userData);
             _dbManagerContainer.DbManager.TryAddUserToClassroomById(classroomData.RoomId, userData.Id);
             Assert.True(_dbManagerContainer.DbManager.TryAddUserToClassroomById(classroomData.RoomId, userData.Id));
-            
+
         }
     }
 #endif
