@@ -1,22 +1,18 @@
 import axios from 'axios';
+import { ClassroomInterface } from '../interfaces';
 
 export const classroomApi = {
+   async getById(userId: number): Promise<ClassroomInterface[]> {
+      const { data } = await axios.post(`http://localhost:5000/classroom/getclassrooms/?userId=${userId}`);
+      return data;
+   },
 
-   async get(classroomId: number): Promise<any> {
-      const { data } = await axios.post('http://localhost:5000/classroom/getdetails', {
-         classroomId: classroomId
+   async add(payload: { userId: number; name: string }): Promise<ClassroomInterface> {
+      const { data } = await axios.post('http://localhost:5000/classroom/add', {
+         userId: payload.userId,
+         name: payload.name,
       });
 
       return data;
    },
-
-   async getByMyId(userId: number): Promise<any> {
-      const { data } = await axios.get('http://localhost:5000/classroom/getbyuserid', {
-         params: {
-            userId: userId
-         }
-      });
-
-      return data;
-   }
 };
