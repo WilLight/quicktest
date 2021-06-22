@@ -32,13 +32,16 @@ export const Header: React.FC = () => {
                            Account
                         </Link>
                      )}
-                     <Link to="/tests" className="header__navitem">
-                        Your tests
-                     </Link>
-                     <button className="header__navitem">Discover</button>
-                     <Link to="/create" className="header__navitem">
-                        Create
-                     </Link>
+                     {sessionMemory.get('userdata') ? (
+                        <>
+                           <Link to="/tests" className="header__navitem">
+                              Your tests
+                           </Link>
+                           <Link to="/create" className="header__navitem">
+                              Create
+                           </Link>
+                        </>
+                     ) : undefined}
                   </div>
                </div>
             </div>

@@ -33,7 +33,7 @@ export const Signup: React.FC<Props> = ({ onCloseMenu, setVisibleSignup }) => {
          toggleAuthMenu();
          toastify('You have successfully registered, you can now log in.');
       } catch (error) {
-         toastify('Such e-mail is already registered.');
+         toastify('Something went wrong..');
       }
    };
 

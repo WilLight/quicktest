@@ -1,7 +1,15 @@
 export interface TestInterface {
-   id: string;
-   question: string;
-   answer: string;
+   ownerId: number;
+   quizId: number;
+   quizName: string;
+   studentIds: number[];
+   questions: QuestionInterface[];
+}
+
+export interface QuestionInterface {
+   questionId: number;
+   questionName: string;
+   questionAnswer: string;
 }
 
 export interface UserInterface {
@@ -14,8 +22,9 @@ export interface UserInterface {
 }
 
 export interface ClassroomInterface {
-   readonly roomId: number;
-   readonly teacherId: number;
-   readonly studentIds?: number[];
-   readonly inviteToken: string;
+   roomId: number;
+   roomName: string;
+   teacherId: number;
+   studentIds?: number[];
+   inviteToken: string;
 }

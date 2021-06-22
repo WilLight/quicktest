@@ -1,22 +1,28 @@
 import React from 'react';
-import { terms } from '../tests.json';
-import { TestInterface } from '../interfaces';
+import { useMutation } from 'react-query';
+import { useParams } from 'react-router-dom';
+import { testsApi } from '../api/testsApi';
+import { QuestionInterface } from '../interfaces';
 
 export const Test: React.FC = () => {
-   const [term, setTerm] = React.useState<TestInterface[]>([]); // all terms keep here
-   const [incorrect, setIncorrect] = React.useState<TestInterface[]>([]); // wrong answers keep here
+   const [term, setTerm] = React.useState<QuestionInterface[]>([]); // all terms keep here
+   const [incorrect, setIncorrect] = React.useState<QuestionInterface[]>([]); // wrong answers keep here
    const [text, setText] = React.useState<string>('');
    const [indexArr, setIndexArr] = React.useState<number>(0);
    const [score, setScore] = React.useState<number>(0);
    const [value, setValue] = React.useState<'correct' | 'wrong' | 'end'>();
    const [nextStage, setNextStage] = React.useState<boolean>(false);
 
-   React.useEffect(() => setTerm(terms.sort(() => Math.random() - 0.5)), []);
+   const params: { id: string } = useParams();
+   const { data: tests } = useMutation(['tests'], () => testsApi.getByQuiz(parseInt(params.id)));
+   React.useEffect(() => {
+      if (tests) setTerm(tests.questions.sort(() => Math.random() - 0.5));
+   }, [tests]);
 
    const endScore: number = 100 - Math.round((incorrect.length / term.length) * 100);
    const scorePercent: number = Math.round((score / term.length) * 100);
    const progressbarStyle = { width: scorePercent + '%' };
-   const delTerm = (): void => setIncorrect(incorrect.filter((obj: TestInterface, i: number) => obj !== incorrect[i]));
+   const delTerm = (): void => setIncorrect(incorrect.filter((obj: QuestionInterface, i: number) => obj !== incorrect[i]));
 
    const handleChangeText = (event: React.FormEvent<HTMLInputElement>) => {
       if (event.currentTarget) setText(event.currentTarget.value.toLowerCase().replace(/\s+/g, ' '));
@@ -29,12 +35,12 @@ export const Test: React.FC = () => {
       if (!text.trim()) return;
 
       //checking correct answer
-      if (text !== term[indexArr].question) {
+      if (text !== term[indexArr].questionName) {
          setIncorrect([...incorrect, term[indexArr]]);
          return setValue('wrong');
       }
 
-      setIncorrect(incorrect.filter((obj: TestInterface, index: number) => incorrect.indexOf(obj) === index));
+      setIncorrect(incorrect.filter((obj: QuestionInterface, index: number) => incorrect.indexOf(obj) === index));
 
       // checking length end
       if (indexArr < term.length - 1) {
@@ -96,12 +102,12 @@ export const Test: React.FC = () => {
                   </div>
                   <div className="test__columns">
                      <div className="test__content">
-                        <span>{incorrect[indexArr] ? incorrect[indexArr].answer : term[indexArr].answer}</span>
+                        <span>{incorrect[indexArr] ? incorrect[indexArr].questionAnswer : term[indexArr].questionAnswer}</span>
                         {value === 'wrong' ? (
                            <>
                               <span className="lineWidth"></span>
                               <span className="correctAnswerIs">correct answer</span>
-                              <span>{term[indexArr].question}</span>
+                              <span>{term[indexArr].questionName}</span>
                            </>
                         ) : undefined}
                      </div>
