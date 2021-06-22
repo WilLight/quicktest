@@ -9,12 +9,12 @@ namespace server.DBSystem.ClassroomDataContainers
     [BsonIgnoreExtraElements]
     public sealed class ClassroomData
     {
-        private readonly uint       roomId;
-        private readonly uint       _teacherId;
+        private readonly uint _roomId;
+        private readonly uint _teacherId;
         private readonly List<uint> _studentsIds;
-        private readonly string     inviteToken;
+        private readonly string _inviteToken;
 
-        public uint RoomId => roomId;
+        public uint RoomId => _roomId;
 
         public uint TeacherId => _teacherId;
 
@@ -24,24 +24,24 @@ namespace server.DBSystem.ClassroomDataContainers
         {
             get
             {
-                return inviteToken;
+                return _inviteToken;
             }
         }
 
-        public ClassroomData (uint roomId, uint teacherId, List<uint> studentsIds, string inviteToken)
+        public ClassroomData(uint roomId, uint teacherId, List<uint> studentsIds, string inviteToken)
         {
-            this.roomId = roomId;
+            _roomId = roomId;
             _teacherId = teacherId;
             _studentsIds = studentsIds ?? new List<uint>();
-            this.inviteToken = inviteToken;
+            _inviteToken = inviteToken;
         }
 
-        public ClassroomData (ClassroomData anotherClassroomData)
+        public ClassroomData(ClassroomData anotherClassroomData)
         {
-            roomId = anotherClassroomData.RoomId;
+            _roomId = anotherClassroomData.RoomId;
             _teacherId = anotherClassroomData.TeacherId;
             _studentsIds = anotherClassroomData.StudentsIds ?? new List<uint>();
-            inviteToken = anotherClassroomData.InviteToken;
+            _inviteToken = anotherClassroomData.InviteToken;
         }
     }
 }
