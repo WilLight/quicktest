@@ -1,23 +1,35 @@
 {
-   "compilerOptions": {
-      "sourceMap": true,
-      "target": "es6",
-      "jsx": "preserve",
-      "moduleResolution": "node",
-      "strict": true,
-      "noUnusedLocals": true,
-      "noUnusedParameters": true,
-      "preserveConstEnums": true,
-      "lib": ["dom", "dom.iterable", "esnext"],
-      "allowJs": true,
-      "module": "esnext",
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
-      "noEmit": true,
-      "resolveJsonModule": true,
-      "isolatedModules": true
-   },
-   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-   "exclude": ["node_modules"]
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es6",
+    "jsx": "react-jsx",
+    "moduleResolution": "node",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "module": "esnext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
