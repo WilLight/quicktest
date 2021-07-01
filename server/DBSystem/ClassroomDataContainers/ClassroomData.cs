@@ -9,44 +9,36 @@ namespace server.DBSystem.ClassroomDataContainers
     [BsonIgnoreExtraElements]
     public sealed class ClassroomData
     {
-        private readonly uint _roomId;
-        private readonly uint _teacherId;
-        private readonly string _roomName;
-        private readonly List<uint> _studentsIds;
-        private readonly string _inviteToken;
+        public uint RoomId { get; set; }
 
-        public uint RoomId => _roomId;
+        public uint TeacherId { get; set; }
 
-        public uint TeacherId => _teacherId;
+        public string RoomName { get; set; }
 
-        public string RoomName => _roomName;
+        public List<uint> StudentsIds { get; set; }
 
-        public List<uint> StudentsIds => _studentsIds;
+        public List<uint> QuizIds { get; set; }
 
-        public string InviteToken
+        public string InviteToken { get; }
+
+        public ClassroomData(uint roomId, uint teacherId, string roomName, List<uint> studentsIds, List<uint> quizIds, string inviteToken)
         {
-            get
-            {
-                return _inviteToken;
-            }
-        }
-
-        public ClassroomData(uint roomId, uint teacherId, string roomName, List<uint> studentsIds, string inviteToken)
-        {
-            _roomId = roomId;
-            _teacherId = teacherId;
-            _roomName = roomName;
-            _studentsIds = studentsIds ?? new List<uint>();
-            _inviteToken = inviteToken;
+            RoomId = roomId;
+            TeacherId = teacherId;
+            RoomName = roomName;
+            StudentsIds = studentsIds ?? new List<uint>();
+            QuizIds = quizIds;
+            InviteToken = inviteToken;
         }
 
         public ClassroomData(ClassroomData anotherClassroomData)
         {
-            _roomId = anotherClassroomData.RoomId;
-            _teacherId = anotherClassroomData.TeacherId;
-            _roomName = anotherClassroomData.RoomName;
-            _studentsIds = anotherClassroomData.StudentsIds ?? new List<uint>();
-            _inviteToken = anotherClassroomData.InviteToken;
+            RoomId = anotherClassroomData.RoomId;
+            TeacherId = anotherClassroomData.TeacherId;
+            RoomName = anotherClassroomData.RoomName;
+            StudentsIds = anotherClassroomData.StudentsIds ?? new List<uint>();
+            QuizIds = anotherClassroomData.QuizIds;
+            InviteToken = anotherClassroomData.InviteToken;
         }
     }
 }

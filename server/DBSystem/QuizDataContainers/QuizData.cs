@@ -9,34 +9,28 @@ namespace server.DBSystem.QuizDataContainers
     [BsonIgnoreExtraElements]
     public sealed class QuizData
     {
-        private readonly uint _quizId;
-        private readonly uint _ownerId;
-        private readonly string _quizName;
-        private readonly List<uint> _studentIds;
-        private readonly List<QuizQuestionData> _questions;
+        public uint QuizId { get; set; }
+        public uint OwnerId { get; set; }
+        public string QuizName { get; set; }
+        public List<QuizAnswerData> Answers { get; set; }
+        public List<QuizQuestionData> Questions { get; set; }
 
-        public uint QuizId => _quizId;
-        public uint OwnerId => _ownerId;
-        public string QuizName => _quizName;
-        public List<uint> StudentIds => _studentIds;
-        public List<QuizQuestionData> Questions => _questions;
-
-        public QuizData(uint quizId, uint ownerId, string quizName, List<uint> studentIds, List<QuizQuestionData> questions)
+        public QuizData(uint quizId, uint ownerId, string quizName, List<QuizAnswerData> answers, List<QuizQuestionData> questions)
         {
-            _quizId = quizId;
-            _ownerId = ownerId;
-            _quizName = quizName;
-            _studentIds = studentIds;
-            _questions = questions;
+            QuizId = quizId;
+            OwnerId = ownerId;
+            QuizName = quizName;
+            Answers = answers;
+            Questions = questions;
         }
 
         public QuizData(QuizData anotherQuiz)
         {
-            _quizId = anotherQuiz.QuizId;
-            _ownerId = anotherQuiz.OwnerId;
-            _quizName = anotherQuiz.QuizName;
-            _studentIds = anotherQuiz.StudentIds;
-            _questions = anotherQuiz.Questions;
+            QuizId = anotherQuiz.QuizId;
+            OwnerId = anotherQuiz.OwnerId;
+            QuizName = anotherQuiz.QuizName;
+            Answers = anotherQuiz.Answers;
+            Questions = anotherQuiz.Questions;
         }
 
     }

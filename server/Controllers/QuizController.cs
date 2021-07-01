@@ -37,28 +37,65 @@ namespace server.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<QuizData>> GetQuizes(uint userId)
+        public ActionResult<IEnumerable<QuizData>> GetUserQuizes(uint userId)
         {
+
             if (!_dbManager.TryGetUserData(userId, out var userData))
             {
                 return BadRequest("There is no such userId");
             }
             if (userData.UserRole == UserRole.Teacher)
             {
-                if (_dbManager.TryGetQuizDataByOwner(userId, out var quizDatas))
+                _dbManager.TryGetClassroomsByTeacher(userId, out var classrooms);
+                List<QuizData> quizzes = new List<QuizData>();
+                foreach (var classroom in classrooms)
                 {
-                    return Ok(quizDatas);
+                    if (_dbManager.TryGetQuizDataByOwner(userId, out var quizDatas))
+                    {
+                        quizzes.AddRange(quizDatas);
+                    }
+                }
+                if (quizzes.Count > 0)
+                {
+                    return Ok(quizzes);
                 }
             }
             else
             {
-                if (_dbManager.TryGetQuizDataByStudent(userId, out var quizDatas))
+                _dbManager.TryGetClassroomsByStudent(userId, out var classrooms);
+                List<QuizData> quizzes = new List<QuizData>();
+                foreach (var classroom in classrooms)
                 {
-                    return Ok(quizDatas);
+                    if (_dbManager.TryGetQuizDataByOwner(userId, out var quizDatas))
+                    {
+                        quizzes.AddRange(quizDatas);
+                    }
+                }
+                if (quizzes.Count > 0)
+                {
+                    return Ok(quizzes);
                 }
             }
 
-            return NotFound();
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<QuizData>> GetClassQuizes(uint classroomId)
+        {
+
+            if (!_dbManager.TryGetClassroomData(classroomId, out var userData))
+            {
+                return BadRequest("There is no such classroomId");
+            }
+
+            if (_dbManager.TryGetQuizDataByClassroom(classroomId, out var quizDatas))
+            {
+                return Ok(quizDatas);
+            }
+
+
+            return BadRequest();
         }
 
         [HttpPost]
@@ -74,40 +111,6 @@ namespace server.Controllers
             if (_dbManager.TryCreateQuiz(ownerId, quizName, quizQuestions, out var quizData))
             {
                 return Ok(quizData);
-            }
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public ActionResult<bool> AddStudentToQuiz([FromBody] JObject data)
-        {
-            var userId = data["userId"].ToObject<uint>();
-            var quizId = data["quizId"].ToObject<uint>();
-
-            if (!_dbManager.TryGetUserData(userId, out var userData) || userData.UserRole == UserRole.Teacher)
-            {
-                return BadRequest("There is no student with such userId");
-            }
-            if (!_dbManager.TryAddStudentToQuiz(quizId, userId))
-            {
-                return Ok();
-            }
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public ActionResult<bool> RemoveStudentFromQuiz([FromBody] JObject data)
-        {
-            var userId = data["userId"].ToObject<uint>();
-            var quizId = data["quizId"].ToObject<uint>();
-
-            if (!_dbManager.TryGetUserData(userId, out var userData) || userData.UserRole == UserRole.Teacher)
-            {
-                return BadRequest("There is no student with such userId");
-            }
-            if (!_dbManager.TryRemoveUserFromQuiz(quizId, userId))
-            {
-                return Ok();
             }
             return BadRequest();
         }

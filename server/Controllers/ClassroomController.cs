@@ -26,7 +26,6 @@ namespace server.Controllers
             _dbManager.Initialize();
         }
 
-        //TODO: Will need to use cookies to authorise all of these
         [HttpGet]
         public ActionResult<IEnumerable<ClassroomData>> GetClassrooms(uint userId)
         {
@@ -49,7 +48,7 @@ namespace server.Controllers
                 }
             }
 
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpGet]
