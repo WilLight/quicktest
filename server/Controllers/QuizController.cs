@@ -44,37 +44,9 @@ namespace server.Controllers
             {
                 return BadRequest("There is no such userId");
             }
-            if (userData.UserRole == UserRole.Teacher)
+            if (_dbManager.TryGetQuizDataByUser(userId, out var quizDatas))
             {
-                _dbManager.TryGetClassroomsByTeacher(userId, out var classrooms);
-                List<QuizData> quizzes = new List<QuizData>();
-                foreach (var classroom in classrooms)
-                {
-                    if (_dbManager.TryGetQuizDataByClassroom(classroom.RoomId, out var quizDatas))
-                    {
-                        quizzes.AddRange(quizDatas);
-                    }
-                }
-                if (quizzes.Count > 0)
-                {
-                    return Ok(quizzes);
-                }
-            }
-            else
-            {
-                _dbManager.TryGetClassroomsByStudent(userId, out var classrooms);
-                List<QuizData> quizzes = new List<QuizData>();
-                foreach (var classroom in classrooms)
-                {
-                    if (_dbManager.TryGetQuizDataByClassroom(classroom.RoomId, out var quizDatas))
-                    {
-                        quizzes.AddRange(quizDatas);
-                    }
-                }
-                if (quizzes.Count > 0)
-                {
-                    return Ok(quizzes);
-                }
+                return Ok(quizDatas);
             }
 
             return BadRequest();
@@ -93,7 +65,6 @@ namespace server.Controllers
             {
                 return Ok(quizDatas);
             }
-
 
             return BadRequest();
         }
@@ -126,14 +97,14 @@ namespace server.Controllers
         [HttpPost]
         public ActionResult<QuizData> AddQuiz([FromBody] JObject data)
         {
-            var classroomId = data["classroomId"].ToObject<uint>();
+            var userId = data["userId"].ToObject<uint>();
             var quizName = data["quizName"].ToObject<string>();
             var quizQuestions = data["questions"].ToObject<IEnumerable<QuizQuestionData>>().ToList();
-            if (!_dbManager.TryGetClassroomData(classroomId, out var classroomData))
+            if (!_dbManager.TryGetClassroomData(userId, out var classroomData))
             {
                 return BadRequest("There is no teacher with such userId");
             }
-            if (_dbManager.TryCreateQuiz(classroomId, quizName, quizQuestions, out var quizData))
+            if (_dbManager.TryCreateQuiz(userId, quizName, quizQuestions, out var quizData))
             {
                 return Ok(quizData);
             }

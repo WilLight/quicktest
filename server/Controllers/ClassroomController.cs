@@ -95,5 +95,17 @@ namespace server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost]
+        public ActionResult<bool> AddQuiz([FromBody] JObject data)
+        {
+            uint classroomId = data["classroomId"].ToObject<uint>();
+            uint quizId = data["quizId"].ToObject<uint>();
+            if (_dbManager.TryAddQuizToClassroom(quizId, classroomId))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
     }
 }
