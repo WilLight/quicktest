@@ -35,7 +35,7 @@ export const Test: React.FC = () => {
       if (!text.trim()) return;
 
       //checking correct answer
-      if (text !== term[indexArr].questionName) {
+      if (text !== term[indexArr].questionAnswer) {
          setIncorrect([...incorrect, term[indexArr]]);
          return setValue('wrong');
       }
@@ -102,12 +102,12 @@ export const Test: React.FC = () => {
                   </div>
                   <div className="test__columns">
                      <div className="test__content">
-                        <span>{incorrect[indexArr] ? incorrect[indexArr].questionAnswer : term[indexArr].questionAnswer}</span>
+                        <span>{incorrect[indexArr] ? incorrect[indexArr].questionName : term[indexArr].questionName}</span>
                         {value === 'wrong' ? (
                            <>
                               <span className="lineWidth"></span>
                               <span className="correctAnswerIs">correct answer</span>
-                              <span>{term[indexArr].questionName}</span>
+                              <span>{term[indexArr].questionAnswer}</span>
                            </>
                         ) : undefined}
                      </div>
