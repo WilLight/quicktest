@@ -248,7 +248,7 @@ namespace server.DBSystem
 
             if (ProceedFoundedInfo(out ClassroomData classroomData, foundedClassrooms) == true)
             {
-                _classroomsCollection.DeleteOne(classroom => classroom.RoomId == classroomId);
+                _classroomsCollection.DeleteOne(classroomData.ToBsonDocument());
             }
         }
 
@@ -267,7 +267,7 @@ namespace server.DBSystem
             ClassroomData newClassroomData = new ClassroomData(classroomData);
             newClassroomData.StudentsIds.Add(userId);
 
-            _classroomsCollection.ReplaceOne(classroom => classroom.RoomId == classroomId, newClassroomData);
+            _classroomsCollection.ReplaceOne(classroomData.ToBsonDocument(), newClassroomData);
 
             return true;
         }
@@ -279,9 +279,9 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out classroomData, foundedClassrooms);
         }
 
-        public bool TryCreateQuiz(uint ownerId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
+        public bool TryCreateQuiz(uint classId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
         {
-            if (!TryGetUserData(ownerId, out var userData) && userData.UserRole != UserRole.Teacher)
+            if (!TryGetClassroomData(classId, out var classroomData))
             {
                 quizData = null;
 
@@ -290,7 +290,7 @@ namespace server.DBSystem
 
             uint newQuizId = ++_lastQuizId;
 
-            quizData = new QuizData(newQuizId, ownerId, quizName, new List<uint>(), questions);
+            quizData = new QuizData(newQuizId, classId, quizName, new List<uint>(), questions);
 
             _quizesCollection.InsertOne(quizData);
 
@@ -302,23 +302,6 @@ namespace server.DBSystem
             var foundQuizes = _quizesCollection.Find(quizDataRecord => quizDataRecord.QuizId == quizId);
 
             return ProceedFoundedInfo(out quizData, foundQuizes);
-        }
-
-        public bool TryGetQuizDataByUser(uint userId, out IEnumerable<QuizData> quizDatas)
-        {
-            if (TryGetUserData(userId, out var userData) && userData.UserRole == UserRole.Teacher)
-            {
-                var foundQuizes = _quizesCollection.Find(quizDatas => quizDatas.OwnerId == userId);
-                if (foundQuizes.CountDocuments() != 0)
-                {
-                    var quizesCursor = foundQuizes.ToCursor();
-                    quizesCursor.MoveNext();
-                    quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
-                    return true;
-                }
-            }
-            quizDatas = null;
-            return false;
         }
 
         public bool TryGetQuizDataByClassroom(uint roomId, out IEnumerable<QuizData> quizDatas)
@@ -344,7 +327,7 @@ namespace server.DBSystem
             return false;
         }
 
-        public bool TryCreateQuizAnswer(uint quizParentId, uint ownerId, IEnumerable<QuizQuestionData> answers, out QuizAnswerData quizAnswer)
+        public bool TryCreateQuizAnswer(uint quizParentId, IEnumerable<QuizQuestionData> answers, out QuizAnswerData quizAnswer)
         {
             if (!TryGetQuizData(quizParentId, out var quizData))
             {
@@ -355,7 +338,7 @@ namespace server.DBSystem
             {
                 uint newQuizAnswerId = ++_lastQuizAnswerId;
 
-                quizAnswer = new QuizAnswerData(newQuizAnswerId, ownerId, answers.ToList());
+                quizAnswer = new QuizAnswerData(newQuizAnswerId, answers.ToList());
                 _quizAnswersCollection.InsertOne(quizAnswer);
                 quizData.AnswerIds.Add(newQuizAnswerId);
                 _quizesCollection.ReplaceOne(quiz => quiz.QuizId == quizData.QuizId, quizData);

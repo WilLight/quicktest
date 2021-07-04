@@ -10,15 +10,15 @@ namespace server.DBSystem.QuizDataContainers
     public sealed class QuizData
     {
         public uint QuizId { get; set; }
-        public uint OwnerId { get; set; }
+        public uint ClassId { get; set; }
         public string QuizName { get; set; }
         public List<uint> AnswerIds { get; set; }
         public List<QuizQuestionData> Questions { get; set; }
 
-        public QuizData(uint quizId, uint ownerId, string quizName, List<uint> answers, List<QuizQuestionData> questions)
+        public QuizData(uint quizId, uint classId, string quizName, List<uint> answers, List<QuizQuestionData> questions)
         {
             QuizId = quizId;
-            OwnerId = ownerId;
+            ClassId = classId;
             QuizName = quizName;
             AnswerIds = answers;
             Questions = questions;
@@ -27,7 +27,7 @@ namespace server.DBSystem.QuizDataContainers
         public QuizData(QuizData anotherQuiz)
         {
             QuizId = anotherQuiz.QuizId;
-            OwnerId = anotherQuiz.OwnerId;
+            ClassId = anotherQuiz.ClassId;
             QuizName = anotherQuiz.QuizName;
             AnswerIds = anotherQuiz.AnswerIds;
             Questions = anotherQuiz.Questions;
