@@ -22,9 +22,18 @@ export const classroomApi = {
    },
 
    async addUser(payload: { classroomId: number; userId: number }): Promise<ClassroomInterface> {
-      const { data } = await axios.post('http://localhost:5000/classroom/add', {
+      const { data } = await axios.post('http://localhost:5000/classroom/adduser', {
          classroomId: payload.classroomId,
          userId: payload.userId,
+      });
+
+      return data;
+   },
+
+   async addQuiz(payload: { classroomId: number; quizId: number }): Promise<ClassroomInterface> {
+      const { data } = await axios.post('http://localhost:5000/classroom/addquiz', {
+         classroomId: payload.classroomId,
+         quizId: payload.quizId,
       });
 
       return data;

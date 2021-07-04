@@ -68,7 +68,7 @@ export const Account = () => {
                     <li key={content.roomId} className="modules__card">
                        <Link to={`/classroom/${content.roomId}`}>
                           <h3>{content.roomName}</h3>
-                          <span>{content.studentIds?.length ? content.studentIds?.length : 0} students</span>
+                          <span>{content.studentsIds?.length ? content.studentsIds?.length : 0} students</span>
                        </Link>
                     </li>
                  ))

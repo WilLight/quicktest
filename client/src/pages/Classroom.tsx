@@ -1,7 +1,22 @@
 import React from 'react';
-import { useQuery } from 'react-query';
-import { useParams } from 'react-router-dom';
+import { useMutation, useQuery } from 'react-query';
+import { Link, useParams } from 'react-router-dom';
 import { classroomApi } from '../api/classroomApi';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { toastify } from '../utils/toastify';
+import { testsApi } from '../api/testsApi';
+
+const StudentSchema = yup.object().shape({
+   classroomId: yup.number(),
+   studentId: yup.number(),
+});
+
+const QuizSchema = yup.object().shape({
+   classroomId: yup.number(),
+   quizId: yup.number(),
+});
 
 export const Classroom = () => {
    const params: { id: string } = useParams();
@@ -10,19 +25,20 @@ export const Classroom = () => {
    const closeModal = () => setModalActive(undefined);
    const setActiveModal = (payload: 'student' | 'test' | 'info') => setModalActive(payload);
 
-   const { data } = useQuery(['classroom', params.id], () => classroomApi.getDetails(parseInt(params.id)));
+   const { data: classrooms } = useQuery(['classroom', params.id], () => classroomApi.getDetails(parseInt(params.id)));
+   const { data: tests } = useQuery(['tests', params.id], () => testsApi.getByClassroom(parseInt(params.id)));
 
    return (
       <>
-         {data ? (
+         {classrooms ? (
             <div className="dashboard">
                <div className="dashboard__name">
                   <h1>Classroom</h1>
                </div>
                <div className="dashboard__header">
                   <div className="dashboard__profile flex-column">
-                     <span>{data.roomName}</span>
-                     <span>Students: {data.studentIds ? data.studentIds : 0}</span>
+                     <span>{classrooms.roomName}</span>
+                     <span>Students: {classrooms.studentsIds?.length ? classrooms.studentsIds.length : 0}</span>
                   </div>
                   <div className="dashboard__items">
                      <div>
@@ -43,14 +59,19 @@ export const Classroom = () => {
                   </div>
                </div>
                <ul className="dashboard__content">
-                  <li className="modules__card">
-                     <h3>Quick Test</h3>
-                     <span>2137 questions</span>
-                  </li>
-                  <li className="modules__card">
-                     <h3>Dolor sunt ad reprehenderit labore velit mollit culpa sunt voluptate reprehenderit velit quis duis.</h3>
-                     <span>307 questions</span>
-                  </li>
+                  {tests ? (
+                     tests.map((content) => (
+                        <li className="modules__card">
+                           <Link to={`/t/${content.quizId}`} className="modules__card">
+                              <h3>Module {content.quizName}</h3>
+                              <p>ID: {content.quizId}</p>
+                              <span>{content.questions.length ? content.questions.length : 0} Term(s)</span>
+                           </Link>
+                        </li>
+                     ))
+                  ) : (
+                     <p style={{ marginTop: '25px' }}>There are no tests..</p>
+                  )}
                </ul>
             </div>
          ) : undefined}
@@ -88,17 +109,8 @@ export const Classroom = () => {
                </button>
             </div>
             <div className="modal__block">
-               <div className="modal__message">
-                  To invite students to this class, add their QuickTest usernames below (separate by commas).
-               </div>
-               <form className="flex-row justify-between">
-                  <div className="input">
-                     <input type="text" />
-                  </div>
-                  <button type="submit" className="button button--transparent">
-                     <span>Invite</span>
-                  </button>
-               </form>
+               <div className="modal__message">To invite students to this class, add their QuickTest userId below.</div>
+               <StudentSubmitForm classroomId={parseInt(params.id)} />
             </div>
          </div>
          <div className={modalActive === 'test' ? 'modal modal--visible' : 'modal'}>
@@ -116,19 +128,60 @@ export const Classroom = () => {
                </button>
             </div>
             <div className="modal__block">
-               <div className="modal__message">
-                  To add tests to this class, add their QuickTest ids below (separate by commas).
-               </div>
-               <form className="flex-row justify-between">
-                  <div className="input">
-                     <input type="text" />
-                  </div>
-                  <button type="submit" className="button button--transparent">
-                     <span>Add</span>
-                  </button>
-               </form>
+               <div className="modal__message">To add tests to this class, add their QuickTest id below.</div>
+               <QuizSubmitForm classroomId={parseInt(params.id)} />
             </div>
          </div>
       </>
+   );
+};
+
+const StudentSubmitForm: React.FC<{ classroomId: number }> = ({ classroomId }) => {
+   const { handleSubmit, register } = useForm({ resolver: yupResolver(StudentSchema) });
+   const { mutateAsync: callAddUser } = useMutation(classroomApi.addUser);
+   const onSubmitStudent = async (data: { classroomId: number; userId: number }) => {
+      try {
+         await callAddUser(data);
+         toastify(`successfully added user by id ${data.userId}`);
+      } catch (error) {
+         toastify('error with invite student');
+      }
+   };
+
+   return (
+      <form onSubmit={handleSubmit(onSubmitStudent)} className="flex-row justify-between">
+         <div className="input">
+            <input type="hidden" defaultValue={classroomId} {...register('classroomId')} />
+            <input type="text" required {...register('userId')} />
+         </div>
+         <button type="submit" className="button button--transparent">
+            <span>Invite</span>
+         </button>
+      </form>
+   );
+};
+
+const QuizSubmitForm: React.FC<{ classroomId: number }> = ({ classroomId }) => {
+   const { handleSubmit, register } = useForm({ resolver: yupResolver(QuizSchema) });
+   const { mutateAsync: callAddQuiz } = useMutation(classroomApi.addQuiz);
+   const onSubmitQuiz = async (data: { classroomId: number; quizId: number }) => {
+      try {
+         await callAddQuiz(data);
+         toastify(`successfully added quiz by id ${data.quizId}`);
+      } catch (error) {
+         toastify('error with add quiz');
+      }
+   };
+
+   return (
+      <form onSubmit={handleSubmit(onSubmitQuiz)} className="flex-row justify-between">
+         <div className="input">
+            <input type="hidden" defaultValue={classroomId} {...register('classroomId')} />
+            <input type="text" required {...register('quizId')} />
+         </div>
+         <button type="submit" className="button button--transparent">
+            <span>Add</span>
+         </button>
+      </form>
    );
 };

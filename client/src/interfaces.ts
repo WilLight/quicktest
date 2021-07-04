@@ -1,5 +1,5 @@
 export interface TestInterface {
-   ownerId: number;
+   userId: number;
    quizId: number;
    quizName: string;
    studentIds: number[];
@@ -25,6 +25,6 @@ export interface ClassroomInterface {
    roomId: number;
    roomName: string;
    teacherId: number;
-   studentIds?: number[];
+   studentsIds?: number[];
    inviteToken: string;
 }

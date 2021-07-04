@@ -2,8 +2,13 @@ import axios from 'axios';
 import { TestInterface } from '../interfaces';
 
 export const testsApi = {
+   async getByClassroom(roomId: number): Promise<TestInterface[]> {
+      const { data } = await axios.get(`http://localhost:5000/quiz/GetClassroomQuizes/?classroomId=${roomId}`);
+      return data;
+   },
+
    async getByUser(userId: number): Promise<TestInterface[]> {
-      const { data } = await axios.get(`http://localhost:5000/quiz/getquizes/?userId=${userId}`);
+      const { data } = await axios.get(`http://localhost:5000/quiz/GetUserQuizes/?userId=${userId}`);
       return data;
    },
 

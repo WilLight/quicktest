@@ -9,7 +9,7 @@ import { sessionMemory } from '../utils/sessionMemory';
 import { UserInterface } from '../interfaces';
 
 const TestSchema = yup.object().shape({
-   ownerId: yup.number().required(),
+   userId: yup.number().required(),
    quizName: yup.string().required(),
    questions: yup.array().of(
       yup.object().shape({
@@ -46,7 +46,7 @@ export const CreateTest = () => {
 
    return (
       <form onSubmit={handleSubmit(onSubmit)}>
-         <input type="hidden" required {...register('ownerId')} defaultValue={user ? user.id : 0} />
+         <input type="hidden" required {...register('userId')} defaultValue={user ? user.id : 0} />
          <div className="create__block">
             <div className="input input--white">
                <span>Test Name</span>
