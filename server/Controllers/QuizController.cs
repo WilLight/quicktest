@@ -33,45 +33,107 @@ namespace server.Controllers
             {
                 return Ok(quizData);
             }
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<QuizData>> GetQuizes(uint userId)
+        public ActionResult<IEnumerable<QuizData>> GetUserQuizes(uint userId)
         {
+
             if (!_dbManager.TryGetUserData(userId, out var userData))
             {
                 return BadRequest("There is no such userId");
             }
             if (userData.UserRole == UserRole.Teacher)
             {
-                if (_dbManager.TryGetQuizDataByOwner(userId, out var quizDatas))
+                _dbManager.TryGetClassroomsByTeacher(userId, out var classrooms);
+                List<QuizData> quizzes = new List<QuizData>();
+                foreach (var classroom in classrooms)
                 {
-                    return Ok(quizDatas);
+                    if (_dbManager.TryGetQuizDataByClassroom(classroom.RoomId, out var quizDatas))
+                    {
+                        quizzes.AddRange(quizDatas);
+                    }
+                }
+                if (quizzes.Count > 0)
+                {
+                    return Ok(quizzes);
                 }
             }
             else
             {
-                if (_dbManager.TryGetQuizDataByStudent(userId, out var quizDatas))
+                _dbManager.TryGetClassroomsByStudent(userId, out var classrooms);
+                List<QuizData> quizzes = new List<QuizData>();
+                foreach (var classroom in classrooms)
                 {
-                    return Ok(quizDatas);
+                    if (_dbManager.TryGetQuizDataByClassroom(classroom.RoomId, out var quizDatas))
+                    {
+                        quizzes.AddRange(quizDatas);
+                    }
+                }
+                if (quizzes.Count > 0)
+                {
+                    return Ok(quizzes);
                 }
             }
 
-            return NotFound();
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<QuizData>> GetClassroomQuizes(uint classroomId)
+        {
+
+            if (!_dbManager.TryGetClassroomData(classroomId, out var userData))
+            {
+                return BadRequest("There is no such classroomId");
+            }
+
+            if (_dbManager.TryGetQuizDataByClassroom(classroomId, out var quizDatas))
+            {
+                return Ok(quizDatas);
+            }
+
+
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public ActionResult<QuizAnswerData> GetQuizAnswer(uint quizAnswerId)
+        {
+            if (!_dbManager.TryGetQuizAnswer(quizAnswerId, out var quizAnswer))
+            {
+                return BadRequest("there is no such quizAnswerId");
+            }
+            return Ok(quizAnswer);
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<QuizAnswerData>> GetQuizAnswersByQuiz(uint quizId)
+        {
+            if (!_dbManager.TryGetQuizData(quizId, out var quizData))
+            {
+                return BadRequest("There is no such quizId");
+            }
+
+            if (_dbManager.TryGetQuizAnswersByQuiz(quizId, out var quizAnswers))
+            {
+                return Ok(quizAnswers);
+            }
+            return BadRequest();
         }
 
         [HttpPost]
         public ActionResult<QuizData> AddQuiz([FromBody] JObject data)
         {
-            var ownerId = data["ownerId"].ToObject<uint>();
+            var classroomId = data["classroomId"].ToObject<uint>();
             var quizName = data["quizName"].ToObject<string>();
             var quizQuestions = data["questions"].ToObject<IEnumerable<QuizQuestionData>>().ToList();
-            if (!_dbManager.TryGetUserData(ownerId, out var userData) || userData.UserRole != UserRole.Teacher)
+            if (!_dbManager.TryGetClassroomData(classroomId, out var classroomData))
             {
                 return BadRequest("There is no teacher with such userId");
             }
-            if (_dbManager.TryCreateQuiz(ownerId, quizName, quizQuestions, out var quizData))
+            if (_dbManager.TryCreateQuiz(classroomId, quizName, quizQuestions, out var quizData))
             {
                 return Ok(quizData);
             }
@@ -79,35 +141,18 @@ namespace server.Controllers
         }
 
         [HttpPost]
-        public ActionResult<bool> AddStudentToQuiz([FromBody] JObject data)
+        public ActionResult<QuizAnswerData> AddQuizAnswer([FromBody] JObject data)
         {
-            var userId = data["userId"].ToObject<uint>();
-            var quizId = data["quizId"].ToObject<uint>();
+            var quizParentId = data["quizParentId"].ToObject<uint>();
+            var quizAnswers = data["answers"].ToObject<IEnumerable<QuizQuestionData>>().ToList();
 
-            if (!_dbManager.TryGetUserData(userId, out var userData) || userData.UserRole == UserRole.Teacher)
+            if (!_dbManager.TryGetQuizData(quizParentId, out var quizData))
             {
-                return BadRequest("There is no student with such userId");
+                return BadRequest("There is no Quiz with such QuizId");
             }
-            if (!_dbManager.TryAddStudentToQuiz(quizId, userId))
+            if (_dbManager.TryCreateQuizAnswer(quizParentId, quizAnswers, out var quizAnswer))
             {
-                return Ok();
-            }
-            return BadRequest();
-        }
-
-        [HttpPost]
-        public ActionResult<bool> RemoveStudentFromQuiz([FromBody] JObject data)
-        {
-            var userId = data["userId"].ToObject<uint>();
-            var quizId = data["quizId"].ToObject<uint>();
-
-            if (!_dbManager.TryGetUserData(userId, out var userData) || userData.UserRole == UserRole.Teacher)
-            {
-                return BadRequest("There is no student with such userId");
-            }
-            if (!_dbManager.TryRemoveUserFromQuiz(quizId, userId))
-            {
-                return Ok();
+                return Ok(quizAnswer);
             }
             return BadRequest();
         }

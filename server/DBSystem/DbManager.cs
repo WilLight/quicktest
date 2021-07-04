@@ -23,14 +23,17 @@ namespace server.DBSystem
         private const string UsersCollectionName = "users";
         private const string ClassroomsCollectionName = "classrooms";
         private const string QuizesCollectionName = "quizes";
+        private const string QuizAnswersCollectionName = "quizAnswers";
 
         private IMongoDatabase _database;
         private IMongoCollection<UserData> _usersCollection;
         private IMongoCollection<ClassroomData> _classroomsCollection;
         private IMongoCollection<QuizData> _quizesCollection;
+        private IMongoCollection<QuizAnswerData> _quizAnswersCollection;
         private uint _lastUserId;
         private uint _lastClassroomId;
         private uint _lastQuizId;
+        private uint _lastQuizAnswerId;
 
         /// <summary>
         /// Initialize manager's members and connect to the DB.
@@ -41,10 +44,13 @@ namespace server.DBSystem
             _usersCollection = _database.GetCollection<UserData>(UsersCollectionName);
             _classroomsCollection = _database.GetCollection<ClassroomData>(ClassroomsCollectionName);
             _quizesCollection = _database.GetCollection<QuizData>(QuizesCollectionName);
+            _quizAnswersCollection = _database.GetCollection<QuizAnswerData>(QuizAnswersCollectionName);
+
 
             _lastUserId = GetBiggestUserId();
             _lastClassroomId = GetBiggestClassroomId();
             _lastQuizId = GetBiggestQuizId();
+            _lastQuizAnswerId = GetBiggestQuizAnswerId();
         }
 
         private string GetConnectionString()
@@ -90,6 +96,18 @@ namespace server.DBSystem
             }
 
             return allQuizes.SortByDescending(quizDataRecord => quizDataRecord.QuizId).First().QuizId;
+        }
+
+        private uint GetBiggestQuizAnswerId()
+        {
+            var allQuizAnswers = _quizAnswersCollection.Find(new BsonDocument());
+
+            if (allQuizAnswers.CountDocuments() == 0)
+            {
+                return 0;
+            }
+
+            return allQuizAnswers.SortByDescending(quizAnswerDataRecord => quizAnswerDataRecord.QuizId).First().QuizId;
         }
 
         public bool TryGetClassroomsByTeacher(uint userId, out IEnumerable<ClassroomData> classrooms)
@@ -199,7 +217,7 @@ namespace server.DBSystem
 
             uint newRoomId = ++_lastClassroomId;
 
-            classroomData = new ClassroomData(newRoomId, userId, roomName, students, $"{newRoomId.ToString()}{userId.ToString()}");
+            classroomData = new ClassroomData(newRoomId, userId, roomName, students, new List<uint>(), $"{newRoomId.ToString()}{userId.ToString()}");
 
             _classroomsCollection.InsertOne(classroomData);
 
@@ -261,9 +279,9 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out classroomData, foundedClassrooms);
         }
 
-        public bool TryCreateQuiz(uint ownerId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
+        public bool TryCreateQuiz(uint classId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
         {
-            if (!TryGetUserData(ownerId, out var userData) || userData.UserRole != UserRole.Teacher)
+            if (!TryGetClassroomData(classId, out var classroomData))
             {
                 quizData = null;
 
@@ -272,46 +290,10 @@ namespace server.DBSystem
 
             uint newQuizId = ++_lastQuizId;
 
-            quizData = new QuizData(newQuizId, ownerId, quizName, new List<uint>(), questions);
+            quizData = new QuizData(newQuizId, classId, quizName, new List<uint>(), questions);
 
             _quizesCollection.InsertOne(quizData);
 
-            return true;
-        }
-
-        public bool TryAddStudentToQuiz(uint quizId, uint studentId)
-        {
-            if (!TryGetUserData(studentId, out var userData) || userData.UserRole != UserRole.Student)
-            {
-                return false;
-            }
-
-            if (!TryGetQuizData(quizId, out var quizData) || quizData.StudentIds.Contains(studentId))
-            {
-                return false;
-            }
-
-            QuizData newQuizData = new QuizData(quizData);
-            newQuizData.StudentIds.Add(studentId);
-            _quizesCollection.ReplaceOne(quizData.ToBsonDocument(), newQuizData);
-            return true;
-        }
-
-        public bool TryRemoveUserFromQuiz(uint quizId, uint studentId)
-        {
-            if (!TryGetUserData(studentId, out var userData) || userData.UserRole != UserRole.Student)
-            {
-                return false;
-            }
-
-            if (!TryGetQuizData(quizId, out var quizData) || !quizData.StudentIds.Contains(studentId))
-            {
-                return false;
-            }
-
-            QuizData newQuizData = new QuizData(quizData);
-            newQuizData.StudentIds.Remove(studentId);
-            _quizesCollection.ReplaceOne(quizData.ToBsonDocument(), newQuizData);
             return true;
         }
 
@@ -322,34 +304,92 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out quizData, foundQuizes);
         }
 
-        public bool TryGetQuizDataByOwner(uint ownerId, out IEnumerable<QuizData> quizDatas)
+        public bool TryGetQuizDataByClassroom(uint roomId, out IEnumerable<QuizData> quizDatas)
         {
-            var foundQuizes = _quizesCollection.Find(quizDataRecords => quizDataRecords.OwnerId == ownerId);
+            var foundCloassrooms = _classroomsCollection.Find(classroomData => classroomData.RoomId == roomId);
 
-            if (foundQuizes.CountDocuments() != 0)
+            if (foundCloassrooms.CountDocuments() != 0)
             {
-                var quizesCursor = foundQuizes.ToCursor();
-                quizesCursor.MoveNext();
-                quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
-                return true;
+                var classroomsCursor = foundCloassrooms.ToCursor();
+                classroomsCursor.MoveNext();
+                var classroomDatas = classroomsCursor.Current.AsEnumerable<ClassroomData>();
+                var quizIds = classroomDatas.First().QuizIds;
+                var foundQuizes = _quizesCollection.Find(quizDatas => quizIds.Contains(quizDatas.QuizId));
+                if (foundQuizes.CountDocuments() != 0)
+                {
+                    var quizesCursor = foundQuizes.ToCursor();
+                    quizesCursor.MoveNext();
+                    quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
+                    return true;
+                }
             }
             quizDatas = null;
             return false;
         }
 
-        public bool TryGetQuizDataByStudent(uint studentId, out IEnumerable<QuizData> quizDatas)
+        public bool TryCreateQuizAnswer(uint quizParentId, IEnumerable<QuizQuestionData> answers, out QuizAnswerData quizAnswer)
         {
-            var foundQuizes = _quizesCollection.Find(quizDataRecords => quizDataRecords.StudentIds.Contains(studentId));
-
-            if (foundQuizes.CountDocuments() != 0)
+            if (!TryGetQuizData(quizParentId, out var quizData))
             {
-                var quizesCursor = foundQuizes.ToCursor();
-                quizesCursor.MoveNext();
-                quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
+                quizAnswer = null;
+                return false;
+            }
+            else
+            {
+                uint newQuizAnswerId = ++_lastQuizAnswerId;
+
+                quizAnswer = new QuizAnswerData(newQuizAnswerId, answers.ToList());
+                _quizAnswersCollection.InsertOne(quizAnswer);
+                quizData.AnswerIds.Add(newQuizAnswerId);
+                _quizesCollection.ReplaceOne(quiz => quiz.QuizId == quizData.QuizId, quizData);
                 return true;
             }
-            quizDatas = null;
+        }
+
+        public bool TryGetQuizAnswer(uint answerId, out QuizAnswerData quizAnswer)
+        {
+            var foundQuizAnswers = _quizAnswersCollection.Find(answerData => answerData.QuizId == answerId);
+            if (foundQuizAnswers.CountDocuments() != 0)
+            {
+                var quizAnswerCursor = foundQuizAnswers.ToCursor();
+                quizAnswerCursor.MoveNext();
+                var quizAnswerData = quizAnswerCursor.Current.AsEnumerable<QuizAnswerData>();
+                quizAnswer = quizAnswerData.First();
+                return true;
+            }
+            quizAnswer = null;
             return false;
+        }
+
+        public bool TryGetQuizAnswersByQuiz(uint quizId, out IEnumerable<QuizAnswerData> quizAnswers)
+        {
+            if (!TryGetQuizData(quizId, out var quizData))
+            {
+                quizAnswers = null;
+                return false;
+            }
+            else
+            {
+                var quizAnswerIds = quizData.AnswerIds;
+                var quizAnswersList = new List<QuizAnswerData>();
+                foreach (var item in quizAnswerIds)
+                {
+                    if (TryGetQuizAnswer(item, out var quizAnswer))
+                    {
+                        quizAnswersList.Add(quizAnswer);
+                    }
+                }
+                if (quizAnswersList.Count != 0)
+                {
+                    quizAnswers = quizAnswersList;
+                    return true;
+                }
+                else
+                {
+                    quizAnswers = null;
+                    return false;
+                }
+            }
         }
 
 #if DEBUG
