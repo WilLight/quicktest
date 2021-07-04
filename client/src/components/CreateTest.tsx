@@ -33,11 +33,12 @@ export const CreateTest = () => {
    React.useEffect(() => console.log(errors), [errors]);
 
    const { mutateAsync } = useMutation(testsApi.add);
-   const onSubmit = async (data: any) => {
+   const onSubmit = async (data: any, event?: any) => {
       console.log(data);
       try {
          mutateAsync(data);
          toastify('successfully created test');
+         event?.target.reset();
       } catch (error) {
          toastify('error with create test');
       }

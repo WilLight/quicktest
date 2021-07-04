@@ -13,14 +13,17 @@ export const Tests = () => {
          <div className="">
             <h1>Your tests</h1>
          </div>
-         {tests
-            ? tests.map((content) => (
-                 <Link to={`/t/${content.quizId}`} className="modules__card">
-                    <h3>Module {content.quizName}</h3>
-                    <span>{content.questions.length} Terms</span>
-                 </Link>
-              ))
-            : undefined}
+         {tests ? (
+            tests.map((content) => (
+               <Link to={`/t/${content.quizId}`} className="modules__card">
+                  <h3>Module {content.quizName}</h3>
+                  <p>ID: {content.quizId}</p>
+                  <span>{content.questions.length ? content.questions.length : 0} Term(s)</span>
+               </Link>
+            ))
+         ) : (
+            <p style={{ marginTop: '25px' }}>There are no tests..</p>
+         )}
       </div>
    );
 };

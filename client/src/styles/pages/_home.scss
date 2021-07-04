@@ -1,0 +1,21 @@
+.home {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   height: calc(100vh - 200px);
+   text-align: center;
+
+   h2 {
+      margin: 50px 0;
+   }
+
+   span {
+      margin-top: 10px;
+
+      a {
+         color: $yellow;
+         text-decoration: underline;
+      }
+   }
+}

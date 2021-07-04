@@ -16,10 +16,11 @@ export const CreateClass = () => {
    const user: UserInterface = sessionMemory.get('userdata');
 
    const { mutateAsync } = useMutation(classroomApi.add);
-   const onSubmit = async (data: { roomName: string }) => {
+   const onSubmit = async (data: { roomName: string }, event?: any) => {
       try {
          mutateAsync({ roomName: data.roomName, userId: user.id });
          toastify('successfully created classroom');
+         event?.target.reset();
       } catch (error) {
          toastify('error with create classroom');
       }
