@@ -144,13 +144,14 @@ namespace server.Controllers
         public ActionResult<QuizAnswerData> AddQuizAnswer([FromBody] JObject data)
         {
             var quizParentId = data["quizParentId"].ToObject<uint>();
+            var quizOwnerId = data["ownerId"].ToObject<uint>();
             var quizAnswers = data["answers"].ToObject<IEnumerable<QuizQuestionData>>().ToList();
 
             if (!_dbManager.TryGetQuizData(quizParentId, out var quizData))
             {
                 return BadRequest("There is no Quiz with such QuizId");
             }
-            if (_dbManager.TryCreateQuizAnswer(quizParentId, quizAnswers, out var quizAnswer))
+            if (_dbManager.TryCreateQuizAnswer(quizParentId, quizOwnerId, quizAnswers, out var quizAnswer))
             {
                 return Ok(quizAnswer);
             }

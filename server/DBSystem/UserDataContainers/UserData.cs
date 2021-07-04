@@ -5,21 +5,18 @@
     /// </summary>
     public sealed class UserData
     {
-        private readonly uint _id;
-        private readonly UserCredentials _credentials;
-        private readonly UserRole _userRole;
 
-        public uint Id => _id;
+        public uint Id {get; set;}
 
-        public UserCredentials Credentials => _credentials;
+        public UserCredentials Credentials {get; set;}
 
-        public UserRole UserRole => _userRole;
+        public UserRole UserRole {get; set;}
 
         public UserData(uint id, UserCredentials credentials, UserRole userRole)
         {
-            _id = id;
-            _credentials = credentials;
-            _userRole = userRole;
+            Id = id;
+            Credentials = credentials;
+            UserRole = userRole;
         }
     }
 }
