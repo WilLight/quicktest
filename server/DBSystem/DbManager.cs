@@ -297,6 +297,25 @@ namespace server.DBSystem
             return true;
         }
 
+        public bool TryAddQuizToClassroom(uint quizId, uint classroomId)
+        {
+            if (!TryGetQuizData(quizId, out var quizData))
+            {
+                return false;
+            }
+            if (!TryGetClassroomData(classroomId, out var classroomData))
+            {
+                return false;
+            }
+            if (classroomData.QuizIds.Contains(quizId))
+            {
+                return false;
+            }
+            classroomData.QuizIds.Add(quizId);
+            _classroomsCollection.ReplaceOne(classroom => classroom.RoomId == classroomId, classroomData);
+            return true;
+        }
+
         public bool TryGetQuizData(uint quizId, out QuizData quizData)
         {
             var foundQuizes = _quizesCollection.Find(quizDataRecord => quizDataRecord.QuizId == quizId);
