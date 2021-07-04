@@ -33,7 +33,7 @@ namespace server.Controllers
             {
                 return Ok(quizData);
             }
-            return NotFound();
+            return BadRequest();
         }
 
         [HttpGet]
@@ -95,6 +95,31 @@ namespace server.Controllers
             }
 
 
+            return BadRequest();
+        }
+
+        [HttpGet]
+        public ActionResult<QuizAnswerData> GetQuizAnswer(uint quizAnswerId)
+        {
+            if (!_dbManager.TryGetQuizAnswer(quizAnswerId, out var quizAnswer))
+            {
+                return BadRequest("there is no such quizAnswerId");
+            }
+            return Ok(quizAnswer);
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<QuizAnswerData>> GetQuizAnswersByQuiz(uint quizId)
+        {
+            if (!_dbManager.TryGetQuizData(quizId, out var quizData))
+            {
+                return BadRequest("There is no such quizId");
+            }
+
+            if (_dbManager.TryGetQuizAnswersByQuiz(quizId, out var quizAnswers))
+            {
+                return Ok(quizAnswers);
+            }
             return BadRequest();
         }
 

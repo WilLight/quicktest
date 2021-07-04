@@ -346,6 +346,52 @@ namespace server.DBSystem
             }
         }
 
+        public bool TryGetQuizAnswer(uint answerId, out QuizAnswerData quizAnswer)
+        {
+            var foundQuizAnswers = _quizAnswersCollection.Find(answerData => answerData.QuizId == answerId);
+            if (foundQuizAnswers.CountDocuments() != 0)
+            {
+                var quizAnswerCursor = foundQuizAnswers.ToCursor();
+                quizAnswerCursor.MoveNext();
+                var quizAnswerData = quizAnswerCursor.Current.AsEnumerable<QuizAnswerData>();
+                quizAnswer = quizAnswerData.First();
+                return true;
+            }
+            quizAnswer = null;
+            return false;
+        }
+
+        public bool TryGetQuizAnswersByQuiz(uint quizId, out IEnumerable<QuizAnswerData> quizAnswers)
+        {
+            if (!TryGetQuizData(quizId, out var quizData))
+            {
+                quizAnswers = null;
+                return false;
+            }
+            else
+            {
+                var quizAnswerIds = quizData.AnswerIds;
+                var quizAnswersList = new List<QuizAnswerData>();
+                foreach (var item in quizAnswerIds)
+                {
+                    if (TryGetQuizAnswer(item, out var quizAnswer))
+                    {
+                        quizAnswersList.Add(quizAnswer);
+                    }
+                }
+                if (quizAnswersList.Count != 0)
+                {
+                    quizAnswers = quizAnswersList;
+                    return true;
+                }
+                else
+                {
+                    quizAnswers = null;
+                    return false;
+                }
+            }
+        }
+
 #if DEBUG
         private const string LocalDbAddress = "localhost:27017";
 
