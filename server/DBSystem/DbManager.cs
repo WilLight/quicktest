@@ -23,14 +23,17 @@ namespace server.DBSystem
         private const string UsersCollectionName = "users";
         private const string ClassroomsCollectionName = "classrooms";
         private const string QuizesCollectionName = "quizes";
+        private const string QuizAnswersCollectionName = "quizAnswers";
 
         private IMongoDatabase _database;
         private IMongoCollection<UserData> _usersCollection;
         private IMongoCollection<ClassroomData> _classroomsCollection;
         private IMongoCollection<QuizData> _quizesCollection;
+        private IMongoCollection<QuizAnswerData> _quizAnswersCollection;
         private uint _lastUserId;
         private uint _lastClassroomId;
         private uint _lastQuizId;
+        private uint _lastQuizAnswerId;
 
         /// <summary>
         /// Initialize manager's members and connect to the DB.
@@ -41,10 +44,13 @@ namespace server.DBSystem
             _usersCollection = _database.GetCollection<UserData>(UsersCollectionName);
             _classroomsCollection = _database.GetCollection<ClassroomData>(ClassroomsCollectionName);
             _quizesCollection = _database.GetCollection<QuizData>(QuizesCollectionName);
+            _quizAnswersCollection = _database.GetCollection<QuizAnswerData>(QuizAnswersCollectionName);
+
 
             _lastUserId = GetBiggestUserId();
             _lastClassroomId = GetBiggestClassroomId();
             _lastQuizId = GetBiggestQuizId();
+            _lastQuizAnswerId = GetBiggestQuizAnswerId();
         }
 
         private string GetConnectionString()
@@ -90,6 +96,18 @@ namespace server.DBSystem
             }
 
             return allQuizes.SortByDescending(quizDataRecord => quizDataRecord.QuizId).First().QuizId;
+        }
+
+        private uint GetBiggestQuizAnswerId()
+        {
+            var allQuizAnswers = _quizAnswersCollection.Find(new BsonDocument());
+
+            if (allQuizAnswers.CountDocuments() == 0)
+            {
+                return 0;
+            }
+
+            return allQuizAnswers.SortByDescending(quizAnswerDataRecord => quizAnswerDataRecord.QuizId).First().QuizId;
         }
 
         public bool TryGetClassroomsByTeacher(uint userId, out IEnumerable<ClassroomData> classrooms)
@@ -261,9 +279,9 @@ namespace server.DBSystem
             return ProceedFoundedInfo(out classroomData, foundedClassrooms);
         }
 
-        public bool TryCreateQuiz(uint ownerId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
+        public bool TryCreateQuiz(uint classId, string quizName, List<QuizQuestionData> questions, out QuizData quizData)
         {
-            if (!TryGetUserData(ownerId, out var userData) || userData.UserRole != UserRole.Teacher)
+            if (!TryGetClassroomData(classId, out var classroomData))
             {
                 quizData = null;
 
@@ -272,7 +290,7 @@ namespace server.DBSystem
 
             uint newQuizId = ++_lastQuizId;
 
-            quizData = new QuizData(newQuizId, ownerId, quizName, new List<QuizAnswerData>(), questions);
+            quizData = new QuizData(newQuizId, classId, quizName, new List<uint>(), questions);
 
             _quizesCollection.InsertOne(quizData);
 
@@ -284,21 +302,6 @@ namespace server.DBSystem
             var foundQuizes = _quizesCollection.Find(quizDataRecord => quizDataRecord.QuizId == quizId);
 
             return ProceedFoundedInfo(out quizData, foundQuizes);
-        }
-
-        public bool TryGetQuizDataByOwner(uint ownerId, out IEnumerable<QuizData> quizDatas)
-        {
-            var foundQuizes = _quizesCollection.Find(quizDataRecords => quizDataRecords.OwnerId == ownerId);
-
-            if (foundQuizes.CountDocuments() != 0)
-            {
-                var quizesCursor = foundQuizes.ToCursor();
-                quizesCursor.MoveNext();
-                quizDatas = quizesCursor.Current.AsEnumerable<QuizData>();
-                return true;
-            }
-            quizDatas = null;
-            return false;
         }
 
         public bool TryGetQuizDataByClassroom(uint roomId, out IEnumerable<QuizData> quizDatas)
@@ -322,6 +325,25 @@ namespace server.DBSystem
             }
             quizDatas = null;
             return false;
+        }
+
+        public bool TryCreateQuizAnswer(uint quizParentId, IEnumerable<QuizQuestionData> answers, out QuizAnswerData quizAnswer)
+        {
+            if (!TryGetQuizData(quizParentId, out var quizData))
+            {
+                quizAnswer = null;
+                return false;
+            }
+            else
+            {
+                uint newQuizAnswerId = ++_lastQuizAnswerId;
+
+                quizAnswer = new QuizAnswerData(newQuizAnswerId, answers.ToList());
+                _quizAnswersCollection.InsertOne(quizAnswer);
+                quizData.AnswerIds.Add(newQuizAnswerId);
+                _quizesCollection.ReplaceOne(quiz => quiz.QuizId == quizData.QuizId, quizData);
+                return true;
+            }
         }
 
 #if DEBUG
